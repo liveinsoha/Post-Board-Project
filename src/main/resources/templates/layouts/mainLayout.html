@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <th:block layout:fragment="css"></th:block> <!--각 페이지의 css 받기-->
+
+</head>
+<body>
+
+<div th:replace="fragments/header::header"></div>
+
+<div layout:fragment="content" class="content"></div>
+
+<div th:replace="fragments/footer::footer"></div>
+
+<th:block layout:fragment="script"></th:block> <!--각 페이지의 js 받기-->
+</body>
+
+</html>
