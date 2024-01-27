@@ -1,6 +1,9 @@
 package cos.blog;
 
+import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
+import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
+import cos.blog.web.service.BoardService;
 import cos.blog.web.service.MemberService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,16 @@ public class BlogApplication {
         return new InitService();
     }
 
+    /**
+     * 프록시 객체를 로딩하기 위한 라이브러리
+     * @return
+     */
+    @Bean
+    Hibernate5JakartaModule hibernate5Module() {
+        Hibernate5JakartaModule hibernate5JakartaModule = new Hibernate5JakartaModule();
+        hibernate5JakartaModule.configure(Hibernate5JakartaModule.Feature.FORCE_LAZY_LOADING, true);
+        return hibernate5JakartaModule;
+    }
 
     public static class InitService {
 
@@ -34,10 +47,18 @@ public class BlogApplication {
         @Autowired
         MemberService memberService;
 
+        @Autowired
+        BoardService boardService;
+
         @PostConstruct
         void initData() {
             for (int i = 1; i <= 10; i++) {
-                memberService.join(new Member("kim" + i, bCryptPasswordEncoder.encode("aaa"), "aaa"));
+                Member member = new Member("kim" + i, bCryptPasswordEncoder.encode("aaa"), "aaa");
+                memberService.join(member);
+                for (int j = 1; j <= 3; j++) {
+                    boardService.addBoard("title" + j, "content", member.getId());
+                }
+
             }
         }
     }

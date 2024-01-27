@@ -9,6 +9,9 @@ import cos.blog.web.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,8 +38,9 @@ public class CRUDControllerTest {
     }
 
     @GetMapping("/paging/member")
-    public Page<MemberDto> page(@RequestParam int pageNo, @RequestParam String criteria){
-        Page<Member> membersPaging = memberService.findMembersPaging(pageNo, criteria);
+    public Page<MemberDto> page(
+            @PageableDefault(size = 5, page = 0, sort = "createdDate", direction = Sort.Direction.DESC)Pageable pageable){
+        Page<Member> membersPaging = memberService.findAll(pageable);
         Page<MemberDto> memberDTOs = membersPaging.map(MemberDto::new);
         return memberDTOs;
     }

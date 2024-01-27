@@ -2,9 +2,11 @@ package cos.blog.web.service;
 
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
-import cos.blog.web.repository.BoardRepository;
+import cos.blog.web.repository.board.BoardRepository;
 import cos.blog.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +28,17 @@ public class BoardService {
         return board.getId();
     }
 
-    public Board findById(Long boardId){
+    public Board findById(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(NoSuchElementException::new);
     }
 
-    public void deleteBoard(Long boardId){
+    @Transactional
+    public void deleteBoard(Long boardId) {
         boardRepository.deleteById(boardId);
+    }
+
+    public Page<Board> findAllPaging(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllPaging(pageable);
+        return boards;
     }
 }

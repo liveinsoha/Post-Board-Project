@@ -3,7 +3,7 @@ package cos.blog.web.service;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
 import cos.blog.web.model.entity.Reply;
-import cos.blog.web.repository.BoardRepository;
+import cos.blog.web.repository.board.BoardRepository;
 import cos.blog.web.repository.MemberRepository;
 import cos.blog.web.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;

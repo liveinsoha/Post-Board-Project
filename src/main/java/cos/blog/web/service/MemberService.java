@@ -7,6 +7,7 @@ import cos.blog.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +44,10 @@ public class MemberService {
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, criteria));
         Page<Member> all = memberRepository.findAll(pageRequest);
         return all;
+    }
+
+    public Page<Member> findAll(Pageable pageable) {
+        Page<Member> members = memberRepository.findAll(pageable);
+        return members;
     }
 }

@@ -5,6 +5,24 @@
 
 
 <th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+            /* 간격을 조절하기 위한 여백 추가 (옵션) */
+        }
+
+        .card {
+            width: 45%;
+            /* 첫 번째 자식 요소인 카드의 너비 조절 */
+        }
+
+        .table-container {
+            width: 45%;
+            /* 두 번째 자식 요소인 테이블 컨테이너의 너비 조절 */
+        }
+    </style>
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
@@ -12,13 +30,36 @@
 
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
-    <div class="card" style="width:400px">
-        <img class="card-img-top" th:src="@{/images/beach.png}"
-          src="/images/beach.png" alt="Card image">
-        <div class="card-body">
-            <h4 class="card-title">John Doe</h4>
-            <p class="card-text">Some example text.</p>
-            <a href="#" class="btn btn-primary">See Profile</a>
+    <div class="container">
+
+        <div class="card">
+            <img class="card-img-top" th:src="@{/images/beach.png}" alt="Card image">
+            <div class="card-body">
+                <h4 class="card-title">John Doe</h4>
+                <p class="card-text">Some example text.</p>
+                <a href="#" class="btn btn-primary">See Profile</a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>Boards</h2>
+            <p></p>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>content</th>
+                    <th>Writer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="board:${boards}">
+                    <td th:text="${board.title}">John</td>
+                    <td th:text="${board.content}">Doe</td>
+                    <td th:text="${board.member.name}">john@example.com</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
