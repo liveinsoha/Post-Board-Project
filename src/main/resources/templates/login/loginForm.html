@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+
+<th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+    <style>
+        form {
+            padding-left: 200px;
+            padding-right: 200px;
+        }
+
+        .form-group {
+            width: 250px;
+            margin: 0 auto;
+        }
+
+        .form-group button {
+            margin: 0 auto;
+        }
+        .message {
+         margin: 0 auto;
+            font-size: 12px;
+            /* 예시로 16px로 설정, 원하는 크기로 조정 가능 */
+            font-weight: bold;
+            /* 굵은 글씨체 설정 */
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            /* 원하는 글꼴로 설정, 예시로 Arial 사용 */
+            /* 다른 스타일 속성들도 필요에 따라 추가할 수 있습니다. */
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+</th:block>
+
+<div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
+
+
+    <form action="/blog/login" method="post">
+        <div class="form-group">
+            <label for="name">Email name:</label>
+            <input type="text" class="form-control" placeholder="Enter name" id="name" name="name">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" placeholder="Enter password" id="password" name="password">
+        </div>
+        <div class="form-group form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox"> Remember me
+            </label>
+        </div>
+        <div class="form-group message" th:if="${#strings.toString(param.hasMessage)} == 'true'" th:text="${param.message}">
+            아이디와 비밀번호를 확인해주세요
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+
+
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+</html>

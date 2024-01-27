@@ -1,7 +1,9 @@
 package cos.blog.service;
 
-import cos.blog.model.entity.Board;
-import cos.blog.model.entity.Member;
+import cos.blog.web.model.entity.Board;
+import cos.blog.web.model.entity.Member;
+import cos.blog.web.service.BoardService;
+import cos.blog.web.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -29,6 +30,7 @@ class BoardServiceTest {
     void beforeEach() {
         Member member = new Member("Lee", "aaa", "qqq");
         savedId = memberService.join(member);
+        System.out.println(member.getRole().toString());
         log.info("member = {}", member);
     }
 

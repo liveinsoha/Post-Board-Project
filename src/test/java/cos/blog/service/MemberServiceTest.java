@@ -1,6 +1,7 @@
 package cos.blog.service;
 
-import cos.blog.model.entity.Member;
+import cos.blog.web.model.entity.Member;
+import cos.blog.web.service.MemberService;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
