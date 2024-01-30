@@ -44,4 +44,6 @@ public class Board {
 
     @CreatedDate
     LocalDateTime createdDate;
+
+
 }

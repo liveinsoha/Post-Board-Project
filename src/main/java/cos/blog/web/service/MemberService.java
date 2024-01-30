@@ -50,4 +50,8 @@ public class MemberService {
         Page<Member> members = memberRepository.findAll(pageable);
         return members;
     }
+
+    public Optional<Member> findByName(String name) {
+        return memberRepository.findByName(name);
+    }
 }

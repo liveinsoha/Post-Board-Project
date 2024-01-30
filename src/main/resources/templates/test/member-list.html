@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div id="memberListContent">
+
+    <ul>
+        <li th:each="member: ${members}" th:text="|${member.name} , ${member.age}|"></li>
+    </ul>
+
+</div>
+</html>

@@ -32,7 +32,7 @@ public class Reply {
     Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_ID")
+    @JoinColumn(name = "MEMBER_ID")
     Member member;
 
     @CreatedDate

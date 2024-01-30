@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+
+<th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+    <style>
+        form {
+            margin: 30px;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+</th:block>
+
+<div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
+
+
+    <form action="/blog/board/createBoard" th:object="${boardForm}" method="post">
+        <div class="form-group">
+            <div class="form-group geeting" >글 작성하기</div>
+            <label th:for="title" for="title">Title:</label>
+            <input type="text" th:field="*{title}" class="form-control" placeholder="title" id="title">
+        </div>
+        <div class="form-group">
+            <label  th:for="content" for="content">Content:</label>
+            <textarea class="form-control" th:field="*{content}" rows="5" id="content">content...</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+    </form>
+
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+</html>

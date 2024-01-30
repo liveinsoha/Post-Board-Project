@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+
+<th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+    <style>
+        .card {
+            width: 500px;
+            padding: 20px;
+            margin: auto;
+            text-align: left;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .table th {
+            font-weight: normal;
+        }
+
+        .table th:nth-child(1),
+        .table td:nth-child(1) {
+            width: 20%;
+        }
+
+        .table th:nth-child(2),
+        .table td:nth-child(2) {
+            width: 80%;
+        }
+
+        .jumbotron {
+            font-size: 1rem;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+    <script th:src="@{/js/board/board.js}"></script>
+
+</th:block>
+
+<div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
+
+    <div class="card" style="width:500px" th:object="${board}">
+        <th:block sec:authorize="isAuthenticated()">
+            <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}"/>
+        </th:block>
+        <input type="hidden" id="boardId" th:value="*{id}"/>
+        <p class="card-title" th:text="|글번호: *{id} writer: *{writer}|">writer</p>
+
+        <label for="title" th:for="title">Title</label>
+        <input type="text" th:value="*{title}" class="form-control" placeholder="title" id="title">
+
+        <div class="form-group">
+            <label for="content" th:for="content">Content:</label>
+            <textarea class="form-control" th:text="*{content}" rows="5" id="content"
+                      readonly>content...</textarea>
+        </div>
+        <div class="container">
+            <h6>replys</h6>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>name</th>
+                    <th>reply</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each=" reply : ${board.replys}">
+                    <td th:text="${reply.replyAuthor}">John</td>
+                    <td th:text="${reply.content}">Doe</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <form class="form-inline justify-content-end mt-3">
+            <label for="reply-content" class="mr-2"></label>
+            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="add reply..." id="reply-content">
+            <button class="btn btn-primary btn-sm" id="btn-reply-save" type="button">댓글 달기</button>
+        </form>
+    </div>
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+</html>

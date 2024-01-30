@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" >
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Ajax 호출</h1>
+    <button type="button" onclick="getMemberList()">모든 멤버 찾기</button>
+
+    <div id="memberListContent"></div>
+</div>
+
+<script type="text/javascript">
+    function getMemberList() {
+        $.ajax({
+            type: "POST",
+            url: "/blog/members/search",
+            // data: form, // api 호출을 위한 요청 변수가 필요하다면 사용해주세요.
+            dataType: "text"
+        })
+            .done(function (result) {
+                console.log(result);
+                $("#memberListContent").replaceWith(result);
+            })
+            .fail(function(jqXHR) {
+                console.log(jqXHR);
+            })
+            .always(function() {
+                console.log("요청, 응답 결과에 상관없이, 이건 항상 실행됩니다.");
+            })
+    }
+</script>
+</body>
+</html>

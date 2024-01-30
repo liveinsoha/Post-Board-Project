@@ -61,4 +61,8 @@ public class PrincipalDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

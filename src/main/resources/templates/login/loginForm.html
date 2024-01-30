@@ -33,12 +33,14 @@
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+    <script th:src="@{/js/login/login.js}"></script>
 </th:block>
 
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
 
-    <form action="/blog/login" method="post">
+    <form action="/blog/login" method="post" name="login">
+        <div class="form-group geeting" >로그인 하세요</div>
         <div class="form-group">
             <label for="name">Email name:</label>
             <input type="text" class="form-control" placeholder="Enter name" id="name" name="name">
@@ -52,11 +54,14 @@
                 <input class="form-check-input" type="checkbox"> Remember me
             </label>
         </div>
+
+
+        <div class="message" th:if="${hasMessage == true}" th:text="${message}"></div>
         <div class="form-group message" th:if="${#strings.toString(param.hasMessage)} == 'true'" th:text="${param.message}">
-            아이디와 비밀번호를 확인해주세요
+            아이디와 확인해주세요
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-primary" onclick="signin()">Submit</button>
         </div>
     </form>
 

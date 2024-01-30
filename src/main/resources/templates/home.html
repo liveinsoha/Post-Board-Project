@@ -53,10 +53,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="board:${boards}">
+                <tr th:each="board:${boards}" style="cursor:pointer;color:#blue;"
+                    th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|">
                     <td th:text="${board.title}">John</td>
                     <td th:text="${board.content}">Doe</td>
-                    <td th:text="${board.member.name}">john@example.com</td>
+                    <td th:text="${board.writer}">john@example.com</td>
                 </tr>
                 </tbody>
             </table>

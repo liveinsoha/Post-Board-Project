@@ -1,5 +1,6 @@
 package cos.blog.web.controller;
 
+import cos.blog.web.dto.BoardResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,8 @@ public class HomeController {
                         @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
                         Pageable pageable) {
         Page<Board> boards = boardService.findAllPaging(pageable);
-        model.addAttribute("boards", boards);
+        Page<BoardResponseDto> boardFormDtos = boards.map(BoardResponseDto::new);
+        model.addAttribute("boards", boardFormDtos);
         return "home";
     }
 

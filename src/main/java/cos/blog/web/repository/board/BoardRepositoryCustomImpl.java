@@ -2,11 +2,15 @@ package cos.blog.web.repository.board;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import cos.blog.web.dto.QReplyResponseDto;
+import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.QBoard;
 import cos.blog.web.model.entity.QMember;
+import cos.blog.web.model.entity.QReply;
 import cos.blog.web.util.QuerydslUtil;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
+@Slf4j
 public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     private final JPAQueryFactory query;
@@ -33,16 +38,19 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Board> result = query.select(board)
                 .from(board)
-                .leftJoin(board.member, QMember.member)
-               // .orderBy(ORDER.toArray(OrderSpecifier[]::new))
+                .leftJoin(board.member, QMember.member).fetchJoin()
+                .orderBy(ORDER.toArray(OrderSpecifier[]::new))
                 .offset(offset)
                 .limit(pageSize).fetch();
 
+        log.info("쿼리 한 방");
         Long total = query.select(board.count())
                 .from(board)
                 .leftJoin(board.member, QMember.member)
                 .fetchOne();
-
+        log.info("쿼리 두 방");
         return new PageImpl<>(result, pageable, total);
     }
+
+
 }
