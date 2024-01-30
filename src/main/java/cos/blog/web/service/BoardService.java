@@ -6,6 +6,7 @@ import cos.blog.web.model.entity.Member;
 import cos.blog.web.repository.board.BoardRepository;
 import cos.blog.web.repository.MemberRepository;
 import cos.blog.web.repository.reply.ReplyRepository;
+import jakarta.transaction.TransactionScoped;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class BoardService {
 
+    private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
 
@@ -56,6 +59,7 @@ public class BoardService {
         return null;
     }
 
+    @Transactional
     public void deleteReply(Long replyId) {
         replyRepository.deleteById(replyId);
     }

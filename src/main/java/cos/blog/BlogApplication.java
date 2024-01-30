@@ -52,10 +52,10 @@ public class BlogApplication {
 
         @PostConstruct
         void initData() {
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= 10; i++) {
                 Member member = new Member("kimkim" + i, bCryptPasswordEncoder.encode("aaa"), "aaa");
                 Long memberId = memberService.join(member);
-                for (int j = 1; j <= 2; j++) {
+                for (int j = 1; j <= 3; j++) {
                     Long boardId = boardService.addBoard("title" + j, "content", member);
                 }
 

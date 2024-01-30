@@ -1,4 +1,5 @@
 function callAjax(method, url, data) {
+//주의할 점은 다음과 같이 Content-type을 설정하지 않을 경우  `application/x-www-form-urlencoded`로 기본 설정 되어 서버로 전송
 
     $.ajax({
         method: method,
@@ -11,7 +12,7 @@ function callAjax(method, url, data) {
             location.reload();
         },
         error: function (data) {
-            if(data.status == 302){
+            if(data.status == 401){
             console.log("401");
                 const returnUrl = window.location.href;
                 location.href = '/blog/login?returnUrl='+returnUrl;

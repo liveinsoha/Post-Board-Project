@@ -9,7 +9,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long>, ReplyReposi
 
 
     @Modifying
-    @Query(value = "INSERT INTO reply(member_Id, board_Id, content, CREATED_DATE) VALUES(:memberId, :boardId, :content, now())", nativeQuery = true)
+    @Query(value = "INSERT INTO reply(member_Id, board_Id, content, CREATED_TIME) VALUES(:memberId, :boardId, :content, now())", nativeQuery = true)
     int mSave(Long memberId, Long boardId, String content); // 업데이트된 행의 개수를 리턴해줌.
 
 

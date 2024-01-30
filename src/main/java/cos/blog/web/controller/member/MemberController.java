@@ -1,4 +1,4 @@
-package cos.blog.web.controller;
+package cos.blog.web.controller.member;
 
 import cos.blog.web.dto.CheckIdDto;
 import cos.blog.web.dto.JoinFormDto;

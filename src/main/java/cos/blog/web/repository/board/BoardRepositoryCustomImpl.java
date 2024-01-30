@@ -2,8 +2,6 @@ package cos.blog.web.repository.board;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import cos.blog.web.dto.QReplyResponseDto;
-import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.QBoard;
 import cos.blog.web.model.entity.QMember;

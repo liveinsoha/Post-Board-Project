@@ -1,4 +1,4 @@
-package cos.blog.web.controller;
+package cos.blog.web.controller.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

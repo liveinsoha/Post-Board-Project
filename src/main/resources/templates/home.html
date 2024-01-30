@@ -53,7 +53,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="board:${boards}" style="cursor:pointer;color:#blue;"
+                <tr th:each="board:${responses}" style="cursor:pointer;color:#blue;"
                     th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|">
                     <td th:text="${board.title}">John</td>
                     <td th:text="${board.content}">Doe</td>
@@ -61,6 +61,27 @@
                 </tr>
                 </tbody>
             </table>
+            <section th:if="${responses.totalElements ne 0}" class="mt-2 d-flex justify-content-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item" th:class="${responses.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/(page=${paging.prevPageNumber})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <th:block th:with="start = ${paging.startPageNumberInThisPageGroup}, end = ${paging.lastPageNumberInThisPageGroup}">
+                            <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}" th:class="${responses.pageable.pageNumber eq num - 1} ? 'active' : ''">
+                                <a class="page-link" th:href="@{/(page=${num} - 1)}" th:text="${num}">1</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:class="${responses.last} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/(page=${paging.nextPageNumber})}" aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
         </div>
     </div>
 

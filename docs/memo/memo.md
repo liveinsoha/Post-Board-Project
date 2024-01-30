@@ -1,3 +1,20 @@
+## 로그인한 경우와 그렇지 않은경우 태그 보일지 말지 설정할 수 있다
+````agsl
+  <li sec:authorize="isAnonymous()" class="nav-item">
+                    <a class="nav-link" href="/blog/login">로그인</a>
+                </li>
+                <li sec:authorize="isAnonymous()" class="nav-item">
+                    <a class="nav-link" href="/blog/member/join">회원가입</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/blog/board/createBoard">글쓰기</a>
+                </li>
+                <li sec:authorize="isAuthenticated()" class="nav-item">
+                    <a class="nav-link" href="/blog/logout">로그아웃</a>
+                </li>
+````
+
+
 ## input태그에 값을 채우기 위해선 th:value를 써야한다
 ````agsl
   <label for="memberId"></label>
@@ -34,6 +51,7 @@ css로 링크인걸 알려주는 센스정도는 보여주셔야겠죠?
 ## 타임리프에서 경로를 작성할 때는 @{안에 작성}
 
 ## button의 기본 type은 submit이다. 이 경우 브라우저 콘솔 확인하지 못하게 된다.
+
 
 
 ## 타임리프에서 인증객체에 접근할 수 있는 방법 2가지
@@ -305,3 +323,127 @@ public class AjaxAwareAuthenticationEntryPoint extends LoginUrlAuthenticationEnt
 
         return http.build();
 ```
+
+## proxy객체를 로딩하기 위해 다음 라이브러리가 필요하다.
+````agsl
+ /**
+     * 프록시 객체를 로딩하기 위한 라이브러리
+     * @return
+     */
+    @Bean
+    Hibernate5JakartaModule hibernate5Module() {
+        Hibernate5JakartaModule hibernate5JakartaModule = new Hibernate5JakartaModule();
+        hibernate5JakartaModule.configure(Hibernate5JakartaModule.Feature.FORCE_LAZY_LOADING, true);
+        return hibernate5JakartaModule;
+    }
+
+````
+
+## 페이징 처리를 위한 객체를 만들었다
+````agsl
+@Getter
+public class PagingDto {
+    // 페이지 그룹에 최대로 담길 수 있는 페이지 수량
+    protected final int MAXIMUM_PAGE_NUMBER_IN_PAGE_GROUP = 5;
+
+    // 페이지 그룹에 담길 수 있는 페이지 수량
+    protected int pageGroupSize;
+
+    // 몇 개의 페이지 그룹이 있는지 수량
+    protected int totalPageGroups;
+
+    // 페이지 그룹의 번호
+    protected int pageGroupNumber;
+    // 현재 페이지 그룹 번호에서 시작하는 페이지 번호
+    protected int startPageNumberInThisPageGroup;
+    // 현재 페이지 그룹 번호에서 끝나는 페이지 번호
+    protected int lastPageNumberInThisPageGroup;
+
+    // 이전 페이지 번호
+    protected int prevPageNumber;
+    // 다음 페이지 번호
+    protected int nextPageNumber;
+
+
+    protected int calculateTotalPageGroups(int totalSearchResultCount) {
+        // 총 블록 개수는 = 총 검색 결과 / 블록 사이즈 -> 소수점은 무조건 반올림 처리
+        return (int) Math.ceil(totalSearchResultCount * 1.0 / pageGroupSize);
+    }
+
+    protected int calculatePageGroupNumber(int number) {
+        // double형이 아닌, int형이므로 소수점은 자동 제거
+        return number / pageGroupSize;
+    }
+
+    protected int calculateStartPageNumber() {
+        return (pageGroupNumber) * pageGroupSize + 1;
+    }
+
+    protected int calculateLastPageNumber(int totalPages, int startPageNumberInThisPageGroup) {
+        int tempLastPageNumber = startPageNumberInThisPageGroup + pageGroupSize - 1;
+        return tempLastPageNumber < totalPages ? tempLastPageNumber : totalPages;
+    }
+}
+
+//생성자를 보면 Page<BoarResponseDto> 페이지 객체를 받아서 PagingDto를 생성하는 것을 확인할 수 있다.
+public class PagingBoardsDto extends PagingDto {
+
+    public PagingBoardsDto(Page<BoardResponseDto> responses) {
+        // Page 인터페이스의 페이지 총 수량 구함
+        int totalPages = responses.getTotalPages();
+
+        pageGroupSize = MAXIMUM_PAGE_NUMBER_IN_PAGE_GROUP;
+
+        totalPageGroups = calculateTotalPageGroups(totalPages);
+        pageGroupNumber = calculatePageGroupNumber(responses.getNumber());
+
+        startPageNumberInThisPageGroup = calculateStartPageNumber();
+        lastPageNumberInThisPageGroup = calculateLastPageNumber(totalPages, startPageNumberInThisPageGroup);
+
+        prevPageNumber = responses.getNumber() - 1;
+        nextPageNumber = responses.getPageable().getPageNumber() + 1;
+    }
+}
+
+````
+
+## 다음은 뷰에서 PagingDto와 List<Dto>를 활용하여 페이징을 나타낸 것. 타임리프에서 링크에 쿼리파라미터를 작성할 때 다음과 같이 괄호안에 작성할 수 있다.
+````agsl
+ <section th:if="${responses.totalElements ne 0}" class="mt-2 d-flex justify-content-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item" th:class="${responses.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/(page=${paging.prevPageNumber})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <th:block th:with="start = ${paging.startPageNumberInThisPageGroup}, end = ${paging.lastPageNumberInThisPageGroup}">
+                            <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}" th:class="${responses.pageable.pageNumber eq num - 1} ? 'active' : ''">
+                                <a class="page-link" th:href="@{/(page=${num} - 1)}" th:text="${num}">1</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:class="${responses.last} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/(page=${paging.nextPageNumber})}" aria-label="Previous">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+````
+
+## th:if를 활용하여 인증객체의 id와 댓글 작성자의 id가 같은 경우 댓글 삭제버튼을 노출할 수 있다
+## 그리고 타임리프를 사용하여 LocalDateTime객체 포맷팅을 할 수 있다.
+````agsl
+ <tr th:each=" reply : ${board.replys}">
+                    <input type="hidden" id="replyId" th:value="${reply.replyAuthorId}" />
+                    <td th:text="${reply.replyAuthor}">John</td>
+                    <td th:text="${reply.content}">Doe</td>
+                    <td class="date" th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">Doe</td>
+                    <th:block sec:authorize="isAuthenticated()">
+                        <td th:if="${#authentication.principal.member.id == reply.replyAuthorId}" class="actions">
+                            <button id="btn-reply-delete" onclick="index.replyDelete(${board.id}, ${reply.id})" class="delete-btn">Delete</button>
+                        </td>
+                    </th:block>
+                </tr>
+````

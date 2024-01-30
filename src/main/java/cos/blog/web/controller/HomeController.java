@@ -1,5 +1,6 @@
 package cos.blog.web.controller;
 
+import cos.blog.web.controller.board.PagingBoardsDto;
 import cos.blog.web.dto.BoardResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.service.BoardService;
@@ -20,23 +21,27 @@ public class HomeController {
     private BoardService boardService;
 
     @GetMapping("/")
-    public String main1(Model model,
+    public String home(Model model,
                         @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
                         Pageable pageable) {
         Page<Board> boards = boardService.findAllPaging(pageable);
-        Page<BoardResponseDto> boardFormDtos = boards.map(BoardResponseDto::new);
-        model.addAttribute("boards", boardFormDtos);
+        Page<BoardResponseDto> responses = boards.map(BoardResponseDto::new);
+        PagingBoardsDto paging = new PagingBoardsDto(responses);
+        model.addAttribute("responses", responses);
+        model.addAttribute("paging", paging);
         return "home";
     }
 
     @GetMapping("/paging")
     @ResponseBody
-    public Page<Board> main2(Model model,
-                             @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
-                             Pageable pageable) {
+    public Page<BoardResponseDto> main2(Model model,
+                                        @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
+                                        Pageable pageable) {
         Page<Board> boards = boardService.findAllPaging(pageable);
+        Page<BoardResponseDto> responses = boards.map(BoardResponseDto::new);
 
-        return boards;
+
+        return responses;
     }
 
 
