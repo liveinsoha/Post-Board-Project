@@ -1,7 +1,9 @@
 package cos.blog.web.repository.board;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import cos.blog.web.dto.BoardSearchDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.QBoard;
 import cos.blog.web.model.entity.QMember;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 
@@ -26,7 +29,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public Page<Board> findAllPaging(Pageable pageable) {
+    public Page<Board> findAllPaging(Pageable pageable, BoardSearchDto boardSearchDto) {
         int pageSize = pageable.getPageSize();
         long offset = pageable.getOffset();
 
@@ -36,6 +39,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Board> result = query.select(board)
                 .from(board)
+                .where(searchByLike(boardSearchDto.getSearchBy(), boardSearchDto.getSearchQuery()))
                 .leftJoin(board.member, QMember.member).fetchJoin()
                 .orderBy(ORDER.toArray(OrderSpecifier[]::new))
                 .offset(offset)
@@ -48,6 +52,16 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
                 .fetchOne();
         log.info("쿼리 두 방");
         return new PageImpl<>(result, pageable, total);
+    }
+
+
+    private BooleanExpression searchByLike(String searchBy, String searchQuery) {
+        if (StringUtils.equals("author", searchBy)) {
+            return QBoard.board.member.name.like("%" + searchQuery + "%");
+        } else if (StringUtils.equals("content", searchBy)) {
+            return QBoard.board.content.like("%" + searchQuery + "%");
+        }
+        return null;
     }
 
 

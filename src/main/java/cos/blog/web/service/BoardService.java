@@ -1,5 +1,6 @@
 package cos.blog.web.service;
 
+import cos.blog.web.dto.BoardSearchDto;
 import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
@@ -48,8 +49,8 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
-    public Page<Board> findAllPaging(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllPaging(pageable);
+    public Page<Board> findAllPaging(Pageable pageable, BoardSearchDto boardSearchDto) {
+        Page<Board> boards = boardRepository.findAllPaging(pageable, boardSearchDto);
         return boards;
     }
 

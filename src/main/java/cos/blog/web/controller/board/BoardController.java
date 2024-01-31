@@ -63,8 +63,6 @@ public class BoardController {
     @DeleteMapping("/board/reply/{boardId}/{replyId}")
     @ResponseBody
     public ResponseEntity<Object> deleteReply(@PathVariable Long replyId) {
-        em.flush();
-        em.clear();
         log.info("replyId = {}", replyId);
         boardService.deleteReply(replyId);
         BaseResponse response = new BaseResponse(HttpStatus.ACCEPTED, "댓글이 삭제되었습니다", true);

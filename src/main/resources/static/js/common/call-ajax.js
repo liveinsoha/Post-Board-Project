@@ -33,16 +33,11 @@ function callAjax(method, url, data) {
 }
 
 function callAjaxNoAlert(method, url, data){
-    const token = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
 
     $.ajax({
         method: method,
         url: url,
         data: data,
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(header, token);
-        },
         success: function (data) {
             console.log(data);
             location.reload();
@@ -65,19 +60,42 @@ function callAjaxNoAlert(method, url, data){
         }
     });
 }
-async function getData(method, url, data) {
-    const token = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
 
+function callAjaxNoAlertWithNoReload(method, url, data){
+
+    $.ajax({
+        method: method,
+        url: url,
+        data: data,
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (data) {
+            if(data.status == 401){
+                const returnUrl = window.location.href;
+                location.href = '/account/login?returnUrl='+returnUrl;
+                return false;
+            }
+            if(data.status == 403){
+                const returnUrl = window.location.href;
+                location.href = '/account/login?returnUrl='+returnUrl;
+                return false;
+            }
+            const response = data.responseJSON;
+            console.log(response);
+            alert(response.message);
+            location.reload();
+        }
+    });
+}
+
+async function getData(method, url, data) {
     try{
         const response = await $.ajax({
             method: method,
             url: url,
             data: JSON.stringify(data),
             contentType: 'application/json',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader(header, token);
-            },
         });
         return response;
     } catch (error) {
@@ -88,9 +106,6 @@ async function getData(method, url, data) {
 }
 
 function uploadFileUsingAjax(method, url, formData) {
-    const token = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
-
     $.ajax({
         method: method,
         url: url,
@@ -99,9 +114,7 @@ function uploadFileUsingAjax(method, url, formData) {
         processData: false,
         contentType: false,
         cache: false,
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(header, token);
-        },
+
         success: function (data) {
             console.log(data);
             alert(data.message)

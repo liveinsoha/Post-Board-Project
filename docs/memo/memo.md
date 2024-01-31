@@ -442,8 +442,65 @@ public class PagingBoardsDto extends PagingDto {
                     <td class="date" th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">Doe</td>
                     <th:block sec:authorize="isAuthenticated()">
                         <td th:if="${#authentication.principal.member.id == reply.replyAuthorId}" class="actions">
-                            <button id="btn-reply-delete" onclick="index.replyDelete(${board.id}, ${reply.id})" class="delete-btn">Delete</button>
+                            <button id="btn-reply-delete" th:onclick="'index.replyDelete(' + ${board.id} + ', ' + ${reply.id} + ')'" class="delete-btn">Delete</button>
                         </td>
                     </th:block>
                 </tr>
+````
+
+## 태그 속성에서 타임리프 문법을 사용할 경우 th:onclick을 사용해야 한다.
+## javaScript함수로 넘길경우 ''로 감싸서 넘겨야 한다.
+````agsl
+<td th:if="${#authentication.principal.member.id == reply.replyAuthorId}" class="actions">
+                            <button id="btn-reply-delete" th:onclick="'index.replyDelete(' + ${board.id} + ', ' + ${reply.id} + ')'" class="delete-btn">Delete</button>
+                        </td>
+                        
+//여기서 작은따옴표(')는 JavaScript 문자열의 따옴표를 나타내며, ${board.id}의 값을 문자열에 삽입하기 위해 사용됩니다. 
+// 예를 들어, board.id가 123이라면 이 부분은 JavaScript에서 문자열로 변환되어 '123'으로 대체됩니다.                        
+           
+                        
+````
+
+## 정렬방법을 바꿀 수 있고 셀렉트 박스에서 쿼리파라미터에 따라 동적으로 선택된 값을 변경할 수 있다
+````agsl
+$(document).ready(function () {
+    var urlParams = new URLSearchParams(window.location.search);
+    var selectedSortOrder = urlParams.get("sort");
+
+    if (selectedSortOrder) {
+        if (selectedSortOrder === 'createdDate,asc') {
+            $("#sortOrder").val("asc").prop('selected', true);
+        } else {
+            $("#sortOrder").val("desc").prop('selected', true);
+        }
+    }
+});
+````
+
+## 셀렉트 박스에서 고른값으로 url쿼리파라미터에 담아 정렬을 할 수 있다. 정렬될 경우 셀렉트 박스에서 선택된 값으로 selected처리할 수 있다.
+````agsl
+
+
+$(document).ready(function () {
+    var urlParams = new URLSearchParams(window.location.search);
+    var selectedSortOrder = urlParams.get("sort");
+
+    if (selectedSortOrder) {
+        if (selectedSortOrder === 'createdDate,asc') {
+            $("#sortOrder").val("asc").prop('selected', true);
+        } else {
+            $("#sortOrder").val("desc").prop('selected', true);
+        }
+    }
+});
+
+function changeSortOrder() {
+    var selectedSortOrder = $("#sortOrder").val();
+
+    // 동적으로 href 생성
+    var dynamicHref = "/blog?sort=createdDate," + selectedSortOrder;
+
+    // 페이지 이동
+    window.location.href = dynamicHref;
+}
 ````
