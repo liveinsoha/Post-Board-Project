@@ -1,9 +1,14 @@
 package cos.blog.web.service;
 
 
+import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.exception.NoSuchMemberException;
+import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
+import cos.blog.web.model.entity.Reply;
 import cos.blog.web.repository.MemberRepository;
+import cos.blog.web.repository.board.BoardRepository;
+import cos.blog.web.repository.reply.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +25,19 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
+
+    public Page<Board> findBoardByMember(Long memberId, Pageable pageable) {
+        Page<Board> boards = boardRepository.findByMember(pageable, memberId);
+        return boards;
+    }
+
+    public Page<ReplyResponseDto> findReplyByMember(Long memberId,Pageable pageable) {
+        Page<ReplyResponseDto> replyByMember = replyRepository.findReplyByMember(pageable, memberId);
+        return replyByMember;
+    }
+
 
     @Transactional
     public Long join(Member member) {

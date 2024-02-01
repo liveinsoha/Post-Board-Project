@@ -1,0 +1,28 @@
+  .container {
+             display: flex;
+             justify-content: space-between;
+             margin: 20px;
+             /* 간격을 조절하기 위한 여백 추가 (옵션) */
+         }
+
+         .card {
+             width: 45%;
+             /* 첫 번째 자식 요소인 카드의 너비 조절 */
+         }
+
+         .table-container {
+             width: 45%;
+             /* 두 번째 자식 요소인 테이블 컨테이너의 너비 조절 */
+         }
+         body {
+             font-family: Arial, sans-serif;
+         }
+
+         h2 {
+             display: inline-block;
+             margin-right: 10px;
+         }
+
+         #sortOrder {
+             vertical-align: middle;
+         }

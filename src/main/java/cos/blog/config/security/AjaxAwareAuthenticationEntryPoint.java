@@ -24,10 +24,11 @@ public class AjaxAwareAuthenticationEntryPoint extends LoginUrlAuthenticationEnt
         String ajaxHeader = ((HttpServletRequest) request).getHeader("X-Requested-With");
         boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
         if (isAjax) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Ajax REquest Denied (Session Expired)");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Ajax Request Denied (Session Expired)");
         } else {
             super.commence(request, response, authException);
         }
 
     }
+    //댓글 작성 요청은 ajax를 통해서 온다. 로그인 하지 않은 경우 인증 되지 않은 경우 403 에러코드를 내려주어 ajax에서 후처리.
 }

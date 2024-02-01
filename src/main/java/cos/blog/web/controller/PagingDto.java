@@ -1,8 +1,10 @@
 package cos.blog.web.controller;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class PagingDto {
     // 페이지 그룹에 최대로 담길 수 있는 페이지 수량
     protected final int MAXIMUM_PAGE_NUMBER_IN_PAGE_GROUP = 5;
@@ -13,7 +15,7 @@ public class PagingDto {
     // 몇 개의 페이지 그룹이 있는지 수량
     protected int totalPageGroups;
 
-    // 페이지 그룹의 번호
+    // 페이지 그룹의 번호 // 0부터 시작 16페이지 : pageGroupNumber => 2, 24페이지 : pageGroupNumber => 4
     protected int pageGroupNumber;
     // 현재 페이지 그룹 번호에서 시작하는 페이지 번호
     protected int startPageNumberInThisPageGroup;
@@ -31,7 +33,7 @@ public class PagingDto {
         return (int) Math.ceil(totalSearchResultCount * 1.0 / pageGroupSize);
     }
 
-    protected int calculatePageGroupNumber(int number) {
+    protected int calculatePageGroupNumber(int number) { // 3페이지 -> 3/5 -> 0, 0부터 시작.
         // double형이 아닌, int형이므로 소수점은 자동 제거
         return number / pageGroupSize;
     }

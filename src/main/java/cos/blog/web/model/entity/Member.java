@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Entity
 public class Member {
 
-
     public Member(String name, String password, String email) {
         this.name = name;
         this.password = password;
@@ -27,7 +26,7 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Member_ID")
+    @Column(name = "MEMBER_ID")
     private Long id;
 
     @Column(nullable = false)

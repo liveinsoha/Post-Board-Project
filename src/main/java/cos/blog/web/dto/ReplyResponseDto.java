@@ -9,14 +9,18 @@ import java.time.LocalDateTime;
 public class ReplyResponseDto {
 
     Long id;
+    Long boardId;
+    String boardTitle;
     Long replyAuthorId;
     String replyAuthor;
     String content;
     LocalDateTime createdTime;
 
 
-    public ReplyResponseDto(Long id, Long replyAuthorId, String replyAuthor, String content, LocalDateTime createdTime) {
+    public ReplyResponseDto(Long id, String boardTitle, Long boardId, Long replyAuthorId, String replyAuthor, String content, LocalDateTime createdTime) {
         this.id = id;
+        this.boardTitle = boardTitle;
+        this.boardId = boardId;
         this.replyAuthorId = replyAuthorId;
         this.replyAuthor = replyAuthor;
         this.content = content;

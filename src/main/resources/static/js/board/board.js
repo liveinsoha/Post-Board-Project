@@ -79,7 +79,7 @@ let index = {
 			content: $("#reply-content").val(),
 		};
 
-		callAjax("GET", "/blog/board/reply/${data.boardId}",data)
+		callAjax("post", "/blog/board/reply/${data.boardId}",data)
 	},
 
 	replyDelete: function (boardId, replyId) {

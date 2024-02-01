@@ -30,6 +30,7 @@ public class BlogApplication {
 
     /**
      * 프록시 객체를 로딩하기 위한 라이브러리
+     *
      * @return
      */
     @Bean
@@ -50,6 +51,7 @@ public class BlogApplication {
         @Autowired
         BoardService boardService;
 
+
         @PostConstruct
         void initData() {
             for (int i = 1; i <= 10; i++) {
@@ -58,8 +60,13 @@ public class BlogApplication {
                 for (int j = 1; j <= 3; j++) {
                     Long boardId = boardService.addBoard("title" + j, "content", member);
                 }
-
             }
+
+            Member member1 = memberService.findById(1L);
+            for (int i = 1; i <= 30; i++) {
+                boardService.addReply(member1.getId(), 30L, "reply" + i);
+            }
+
         }
     }
 }

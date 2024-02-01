@@ -34,13 +34,24 @@ public class BoardService {
         return board.getId();
     }
 
+    public Board findByIdWithMember(Long id){
+        Board board = boardRepository.findByIdWithMember(id).orElseThrow(NoSuchElementException::new);
+        return board;
+    }
+
+    @Transactional
+    public void editBoard(Long boardId, String title, String content) {
+        Board board = boardRepository.findById(boardId).get();
+        board.editBoard(title, content);
+    }
+
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(NoSuchElementException::new);
     }
 
     public List<ReplyResponseDto> findReplyInBoard(Long boardId) {
-        List<ReplyResponseDto> replys = replyRepository.findReplys(boardId);
+        List<ReplyResponseDto> replys = replyRepository.findReplyByBoard(boardId);
         return replys;
     }
 

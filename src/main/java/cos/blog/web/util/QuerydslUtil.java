@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.QBoard;
 import cos.blog.web.model.entity.QMember;
+import cos.blog.web.model.entity.QReply;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,14 +36,20 @@ public class QuerydslUtil {
                 log.info("direction = {}", direction);
                 switch (order.getProperty()) {
                     case "createdDate":
-                        log.info("정렬 기준 createdDate");
-                        OrderSpecifier<?> orderDate = QuerydslUtil.getSortedColumn(direction, QBoard.board, "createdDate");
-                        ORDERS.add(orderDate);
+                        log.info("정렬 기준 Board.createdDate");
+                        OrderSpecifier<?> orderCreatedDate = QuerydslUtil.getSortedColumn(direction, QBoard.board, "createdDate");
+                        ORDERS.add(orderCreatedDate);
+                        break;
+                    case "createdTime":
+                        log.info("정렬 기준 Reply.createdTime");
+                        OrderSpecifier<?> orderCreatedTime = QuerydslUtil.getSortedColumn(direction, QReply.reply, "createdTime");
+                        ORDERS.add(orderCreatedTime);
                         break;
                     case "member":
-                        log.info("정렬 기준 member");
-                        OrderSpecifier<?> orderWriter = QuerydslUtil.getSortedColumn(direction, QMember.member, "name");
-                        ORDERS.add(orderWriter);
+                        log.info("정렬 기준 Member.name");
+                        OrderSpecifier<?> orderMemberName = QuerydslUtil.getSortedColumn(direction, QMember.member, "name");
+                        ORDERS.add(orderMemberName);
+                        //정렬기준 member클래스의 name 필드?
                         break;
                     default:
                         break;

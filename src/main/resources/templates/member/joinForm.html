@@ -13,29 +13,44 @@
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+    <script th:src="@{/js/login/join.js}"></script>
 </th:block>
 
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
-    <form action="/blog/member/join" th:object="${joinFormDto}" method="post">
+    <form>
         <div class="form-group">
-            <label th:for="name" for="name">Name:</label>
-            <input type="text" class="form-control" placeholder="Enter name" th:field="*{name}" id="name">
+            <label th:for="user_id" for="user_id">ID:</label>
+            <input type="text" class="form-control" placeholder="Enter ID" th:field="*{id}" id="user_id">
+            <div id="idChk"></div>
         </div>
         <div class="form-group">
             <label th:for="password" for="password">Password:</label>
-            <input type="password" class="form-control" placeholder="Enter password" th:field="*{password}" id="password">
+            <input type="password" class="form-control" placeholder="Enter password" th:field="*{password}"
+                   id="password">
+            <div id="pwChk"></div>
+        </div>
+        <div class="form-group">
+            <label th:for="password_check" for="password_check">Password:</label>
+            <input type="password" class="form-control" placeholder="password check" id="password_check">
+            <div id="pwChk2"></div>
+        </div>
+        <div class="form-group">
+            <label th:for="user_name" for="user_name">Name:</label>
+            <input type="text" class="form-control" placeholder="Enter name" th:field="*{name}" id="user_name">
+            <div id="nameChk"></div>
         </div>
         <div class="form-group">
             <label th:for="email" for="email">Email address:</label>
-            <input type="email" class="form-control" placeholder="Enter email"  th:field="*{email}" id="email">
+            <input type="email" class="form-control" placeholder="Enter email" th:field="*{email}" id="email">
         </div>
         <div class="form-group form-check">
             <label class="form-check-label">
                 <input class="form-check-input" type="checkbox"> Remember me
             </label>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+
+        <button type="button" id="signup-btn" class="btn btn-primary">Submit</button>
     </form>
 
 </div> <!--각 페이지의 컨텐츠 만들기 끝-->

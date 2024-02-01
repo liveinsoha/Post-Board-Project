@@ -386,9 +386,9 @@ public class PagingDto {
 }
 
 //생성자를 보면 Page<BoarResponseDto> 페이지 객체를 받아서 PagingDto를 생성하는 것을 확인할 수 있다.
-public class PagingBoardsDto extends PagingDto {
+public class PagingBoardDto extends PagingDto {
 
-    public PagingBoardsDto(Page<BoardResponseDto> responses) {
+    public PagingBoardDto(Page<BoardResponseDto> responses) {
         // Page 인터페이스의 페이지 총 수량 구함
         int totalPages = responses.getTotalPages();
 
@@ -478,6 +478,7 @@ $(document).ready(function () {
 ````
 
 ## 셀렉트 박스에서 고른값으로 url쿼리파라미터에 담아 정렬을 할 수 있다. 정렬될 경우 셀렉트 박스에서 선택된 값으로 selected처리할 수 있다.
+## 
 ````agsl
 
 
@@ -493,14 +494,148 @@ $(document).ready(function () {
         }
     }
 });
-
+````
+## 다시 정렬하고자 할경우 검색 조건이 증발하지 않으려면 현재 페이지에 담겨있는 검색 조건 정보를 담고, 정렬 파라미터를 추가해서 요청한다.
+````agsl
 function changeSortOrder() {
+    var selectedSearchBy = document.getElementById("searchBy").value;
+    var searchQuery = document.getElementById("searchQuery").value;
+
+    // 현재 셀렉트 박스의 값과 검색어를 URL에 추가
+    var urlParams = `?searchBy=${selectedSearchBy}&searchQuery=${searchQuery}`;
     var selectedSortOrder = $("#sortOrder").val();
 
     // 동적으로 href 생성
-    var dynamicHref = "/blog?sort=createdDate," + selectedSortOrder;
+    var dynamicHref = urlParams + "&sort=" + selectedSortOrder;
 
     // 페이지 이동
     window.location.href = dynamicHref;
 }
 ````
+
+
+## 페이지 파라미터가 2개 이상일 경우 접두어로 구분
+- 파라미터에 {접두어}_+"xxx" 로 설정
+- 예) /members?member_page=0&order_page=1
+- 
+컨트롤러에서는 @Qualifier 어노테이션으로 접두어를 설정하여 구분. 하나의 요쳥으로 두 개 이상의 Pageable 또는 Sort 객체를 생성하는 경우에, @Qualifier 어노테이션을 사용해서 하나씩 구별할 수 있다. 그리고 요청 파라미터는 ${qualifier}_. 접두사가 있어야한다. 아래와 같은 경우 foo_page, bar_page 등의 파라미터가 있어야한다.
+
+String showUsers(Model model,
+@Qualifier("foo") Pageable first,
+@Qualifier("bar") Pageable second) { … }
+- 
+````agsl
+  @GetMapping("/member/myPage")
+    public String myPage(Model model,
+                         @Qualifier("board") @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable boardPageable,
+                         @Qualifier("reply") @PageableDefault(sort = "createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,
+                         @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long memberId = principalDetails.getMember().getId();
+        Page<BoardResponseDto> boardResponses = memberService.findBoardByMember(memberId, boardPageable).map(BoardResponseDto::new);
+        Page<ReplyResponseDto> replyResponses = memberService.findReplyByMember(memberId, replyPageable);
+        PagingBoardDto pagingBoardDto = new PagingBoardDto(boardResponses);
+        PagingReplyDto pagingReplyDto = new PagingReplyDto(replyResponses);
+
+        System.out.println("pagingBoardDto = " + pagingBoardDto);
+        System.out.println("pagingReplyDto = " + pagingReplyDto);
+
+        model.addAttribute("boards", boardResponses);
+        model.addAttribute("replys",replyResponses);
+        model.addAttribute("pagingBoard", pagingBoardDto);
+        model.addAttribute("pagingReply", pagingReplyDto);
+        return "/member/myPage";
+    }
+
+````
+
+## 모델로 넘어온 객체에 접근해서 selectBox를 selected처리를 할 수도 있고, 쿼리파라미터에 접근해서 할 수도 있고.
+````agsl
+<div class="form-inline justify-content-center" th:object="${boardSearchDto}">
+                <form action="/blog" method="get">
+                    <select th:field="*{searchBy}" class="form-control" style="width:auto;"> //boardSearchDto객체 접근
+                        <option value="author">writer</option>
+                        <option value="content">content</option>
+                    </select>
+                    <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="검색어를 입력해주세요">
+                    <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
+                </form>
+            </div>
+
+            <div class="form-inline justify-content-end">
+                <label for="sortOrder" class="mr-2">Sort Order:</label>
+                <select id="sortOrder" onchange="changeSortOrder()">
+//쿼리파라미터 접근    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,desc'" id="desc" value="createdDate,desc">Latest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,asc'" id="asc" value="createdDate,asc">Oldest</option>
+                </select>
+            </div>
+````
+
+## 각 테이블 요소에 th:onclick, 폼 요소애 th:action으로 링크를 걸어 이동할 수 있다
+````agsl
+
+<form th:action="@{/board/edit/{boardId}(boardId=${editForm.id})}" method="post">
+        <div th:object="${editForm}">
+            <div class="form-group">
+                <div class="form-group geeting">글 수정하기</div>
+ //               
+   <tbody>
+            <tr th:each="board:${boards}" style="cursor:pointer;color:#blue;">
+                <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|" th:text="${board.title}">
+                    John
+                </td>
+                <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|"
+                    th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd')}">2022-12-12
+                </td>
+
+                <td>
+                    <button class="edit-button"
+                            th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id})}'|"
+                            title="Edit">Edit
+                    </button>
+                </td>
+                </th:block>
+            </tr>
+````
+
+## details에서 Board정보를 가져올 때 로그인 인증 객체와 id비교를 하려면 Board writerId가 필요하다. writer정보가 필요하다.
+- 아래와 같이 @Query기능을 통해 Member와 조인하여 조회한다
+````agsl
+  @Query("select b from Board b join fetch b.member m where b.id = :boardId")
+    Optional<Board> findByIdWithMember(Long boardId);
+````
+
+````agsl
+  <div class="d-flex justify-content-between">
+            <p class="card-title" th:text="|글번호: *{id} writer: *{writer}|">writer</p>
+            <th:block sec:authorize="isAuthenticated()">
+                <div th:if="${#authentication.principal.member.id == board.writerId}" class="actions">
+                    <button class="btn btn-secondary"
+                            th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id})}'|">수정
+                    </button>
+                </div>
+            </th:block>
+        </div>
+
+````
+
+## URL을 통한 수정 접근을 막기 위해 인증 인터셉터 만든다. 
+## 이와 같이 인증객체에 접근할 수 있다.
+````agsl
+ PrincipalDetails principal = (PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("principal = " + principal);
+````
+
+## 이와 같이 url경로변수에 접근할 수 있다
+````agsl
+
+            Map<?, ?> pathVariables = (Map<?, ?>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+            System.out.println("pathVariables = " + pathVariables);
+            Long boardId = Long.parseLong((String) pathVariables.get("boardId"));
+
+            Board board = boardRepository.findById(boardId).get(); //id는 가지고 있으므로 지연로딩 하지 않는다.
+
+````
+
+### 로그 찍어본 결과
+principal = PrincipalDetails(member=Member(id=1, name=kimkim1, password=$2a$10$0fRSMTimY.Wakupom7D52ejrrPyDAxZUmFi.g5tM0zRB1GpeJTbK., email=aaa, role=ROLE_MEMBER))
+pathVariables = {boardId=3}

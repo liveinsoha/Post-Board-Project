@@ -1,0 +1,107 @@
+    .card {
+          width: 500px;
+          padding: 20px;
+          margin: auto;
+          text-align: left;
+      }
+
+      .card-title {
+          font-size: 1.5rem;
+      }
+
+      .form-group label {
+          display: block;
+          margin-bottom: 5px;
+      }
+
+      .form-control {
+          width: 100%;
+      }
+
+      .table th {
+          font-weight: normal;
+      }
+
+      .table th:nth-child(1),
+      .table td:nth-child(1) {
+          width: 20%;
+      }
+
+      .table th:nth-child(2),
+      .table td:nth-child(2) {
+          width: 80%;
+      }
+
+      .jumbotron {
+          font-size: 1rem;
+          padding: 20px;
+          margin-bottom: 0;
+      }
+
+      .container {
+          margin-top: 20px;
+          /* 상단 간격 조정 */
+      }
+
+      .container {
+          margin-top: 20px;
+          /* 상단 간격 조정 */
+      }
+
+      h6 {
+          font-size: 18px;
+          /* 제목 글자 크기 조정 */
+      }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          /* 테이블 상단 간격 조정 */
+      }
+
+      th,
+      td {
+          padding: 10px;
+          /* 셀 안 간격 조정 */
+          text-align: left;
+          /* 셀 텍스트 정렬 */
+      }
+
+      tr {
+          border-bottom: 1px solid #ddd;
+          /* 각 댓글 행 사이에 구분선 추가 */
+      }
+
+      td:last-child {
+          white-space: nowrap;
+          /* 텍스트 줄 바꿈 방지 */
+          overflow: hidden;
+          text-overflow: ellipsis;
+          /* 긴 텍스트 일 경우 말줄임표(...)로 표시 */
+      }
+
+      td.date {
+          white-space: nowrap;
+          font-size: 14px;
+          /* 날짜 글자 크기 조정 */
+          max-width: 150px;
+          /* 날짜 셀 최대 너비 조정 */
+          overflow: hidden;
+          text-overflow: ellipsis;
+          /* 긴 텍스트 일 경우 말줄임표(...)로 표시 */
+      }
+
+      td.actions {
+          width: 80px;
+          /* 삭제 버튼 셀 너비 조정 */
+      }
+
+      .delete-btn {
+          /*background-color: #dc3545;*/
+          color: #fff;
+          border: none;
+          padding: 3px 1px;
+          /* 삭제 버튼 크기 조정 */
+          cursor: pointer;
+      }

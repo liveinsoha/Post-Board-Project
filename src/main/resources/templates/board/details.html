@@ -6,115 +6,7 @@
 
 
 <th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
-    <style>
-        .card {
-          width: 500px;
-          padding: 20px;
-          margin: auto;
-          text-align: left;
-      }
-
-      .card-title {
-          font-size: 1.5rem;
-      }
-
-      .form-group label {
-          display: block;
-          margin-bottom: 5px;
-      }
-
-      .form-control {
-          width: 100%;
-      }
-
-      .table th {
-          font-weight: normal;
-      }
-
-      .table th:nth-child(1),
-      .table td:nth-child(1) {
-          width: 20%;
-      }
-
-      .table th:nth-child(2),
-      .table td:nth-child(2) {
-          width: 80%;
-      }
-
-      .jumbotron {
-          font-size: 1rem;
-          padding: 20px;
-          margin-bottom: 0;
-      }
-
-      .container {
-          margin-top: 20px;
-          /* 상단 간격 조정 */
-      }
-
-      .container {
-          margin-top: 20px;
-          /* 상단 간격 조정 */
-      }
-
-      h6 {
-          font-size: 18px;
-          /* 제목 글자 크기 조정 */
-      }
-
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 10px;
-          /* 테이블 상단 간격 조정 */
-      }
-
-      th,
-      td {
-          padding: 10px;
-          /* 셀 안 간격 조정 */
-          text-align: left;
-          /* 셀 텍스트 정렬 */
-      }
-
-      tr {
-          border-bottom: 1px solid #ddd;
-          /* 각 댓글 행 사이에 구분선 추가 */
-      }
-
-      td:last-child {
-          white-space: nowrap;
-          /* 텍스트 줄 바꿈 방지 */
-          overflow: hidden;
-          text-overflow: ellipsis;
-          /* 긴 텍스트 일 경우 말줄임표(...)로 표시 */
-      }
-
-      td.date {
-          white-space: nowrap;
-          font-size: 14px;
-          /* 날짜 글자 크기 조정 */
-          max-width: 150px;
-          /* 날짜 셀 최대 너비 조정 */
-          overflow: hidden;
-          text-overflow: ellipsis;
-          /* 긴 텍스트 일 경우 말줄임표(...)로 표시 */
-      }
-
-      td.actions {
-          width: 80px;
-          /* 삭제 버튼 셀 너비 조정 */
-      }
-
-      .delete-btn {
-          background-color: #dc3545;
-          color: #fff;
-          border: none;
-          padding: 3px 1px;
-          /* 삭제 버튼 크기 조정 */
-          cursor: pointer;
-      }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/board/details.css}" type="text/css">
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
@@ -129,10 +21,19 @@
             <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}"/>
         </th:block>
         <input type="hidden" id="boardId" th:value="*{id}"/>
-        <p class="card-title" th:text="|글번호: *{id} writer: *{writer}|">writer</p>
+        <div class="d-flex justify-content-between">
+            <p class="card-title" th:text="|글번호: *{id} writer: *{writer}|">writer</p>
+            <th:block sec:authorize="isAuthenticated()">
+                <div th:if="${#authentication.principal.member.id == board.writerId}" class="actions">
+                    <button class="btn btn-secondary"
+                            th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id})}'|">수정
+                    </button>
+                </div>
+            </th:block>
+        </div>
 
         <label for="title" th:for="title">Title</label>
-        <input type="text" th:value="*{title}" class="form-control" placeholder="title" id="title">
+        <input type="text" th:value="*{title}" class="form-control" placeholder="title" id="title" readonly>
 
         <div class="form-group">
             <label for="content" th:for="content">Content:</label>
@@ -150,13 +51,16 @@
                 </thead>
                 <tbody>
                 <tr th:each="reply : ${board.replys}">
-                    <input type="hidden" id="replyId" th:value="${reply.replyAuthorId}" />
+                    <input type="hidden" id="replyId" th:value="${reply.replyAuthorId}"/>
                     <td th:text="${reply.replyAuthor}">John</td>
                     <td th:text="${reply.content}">Doe</td>
                     <td class="date" th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">Doe</td>
                     <th:block sec:authorize="isAuthenticated()">
                         <td th:if="${#authentication.principal.member.id == reply.replyAuthorId}" class="actions">
-                            <button id="btn-reply-delete" th:onclick="'index.replyDelete(' + ${board.id} + ', ' + ${reply.id} + ')'" class="delete-btn">Delete</button>
+                            <button id="btn-reply-delete"
+                                    th:onclick="'index.replyDelete(' + ${board.id} + ', ' + ${reply.id} + ')'"
+                                    class="delete-btn">Delete
+                            </button>
                         </td>
                     </th:block>
                 </tr>

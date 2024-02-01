@@ -5,36 +5,8 @@
 
 
 <th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
-    <style>
-        .container {
-             display: flex;
-             justify-content: space-between;
-             margin: 20px;
-             /* 간격을 조절하기 위한 여백 추가 (옵션) */
-         }
-
-         .card {
-             width: 45%;
-             /* 첫 번째 자식 요소인 카드의 너비 조절 */
-         }
-
-         .table-container {
-             width: 45%;
-             /* 두 번째 자식 요소인 테이블 컨테이너의 너비 조절 */
-         }
-         body {
-             font-family: Arial, sans-serif;
-         }
-
-         h2 {
-             display: inline-block;
-             margin-right: 10px;
-         }
-
-         #sortOrder {
-             vertical-align: middle;
-         }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/home/home.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/paging/paging.css}" type="text/css">
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
@@ -71,8 +43,8 @@
             <div class="form-inline justify-content-end">
                 <label for="sortOrder" class="mr-2">Sort Order:</label>
                 <select id="sortOrder" onchange="changeSortOrder()">
-                    <option id="desc" value="createdDate,desc">Latest</option>
-                    <option id="asc" value="createdDate,asc">Oldest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,desc'" id="desc" value="createdDate,desc">Latest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,asc'" id="asc" value="createdDate,asc">Oldest</option>
                 </select>
             </div>
             <p></p>
@@ -116,6 +88,7 @@
             </section>
         </div>
     </div>
+    <!--페이지 이동의 경우 검색조건을 가지고 다시 요청을 해야 한다-->
 
 </div> <!--각 페이지의 컨텐츠 만들기 끝-->
 </html>

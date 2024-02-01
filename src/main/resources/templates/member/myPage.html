@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+
+<th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+</th:block>
+
+<th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+</th:block>
+
+<div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
+
+    <div class="container">
+        <h4>my posts</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>게시글 제목</th>
+                <th>작성일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board:${boards}" style="cursor:pointer;color:#blue;">
+                <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|" th:text="${board.title}">
+                    John
+                </td>
+                <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|"
+                    th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd')}">2022-12-12
+                </td>
+
+                <td>
+                    <button class="edit-button"
+                            th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id})}'|"
+                            title="Edit">Edit
+                    </button>
+                </td>
+                </th:block>
+            </tr>
+
+            </tbody>
+        </table>
+        <section th:if="${boards.totalElements ne 0}" class="mt-2 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${boards.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/member/myPage(board_page=${pagingBoard.prevPageNumber})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <th:block
+                            th:with="start = ${pagingBoard.startPageNumberInThisPageGroup}, end = ${pagingBoard.lastPageNumberInThisPageGroup}">
+                        <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}"
+                            th:class="${boards.pageable.pageNumber eq num - 1} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/member/myPage(board_page=${num} - 1)}"
+                               th:text="${num}">1</a>
+                        </li>
+                    </th:block>
+                    <li class="page-item" th:class="${boards.last} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/member/myPage(board_page=${pagingBoard.nextPageNumber})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </section>
+    </div>
+
+
+    <div class="container">
+        <h4>my replys</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>게시글 제목</th>
+                <th>댓글</th>
+                <th>작성일자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reply:${replys}" style="cursor:pointer;color:#blue;"
+                th:onclick="|location.href='@{/board/details/{id}(id=${reply.boardId})}'|">
+                <td th:text="${reply.boardTitle}">John</td>
+                <td th:text="${reply.content}">content</td>
+                <td th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">2022-12-12</td>
+            </tr>
+            </tbody>
+        </table>
+        <section th:if="${replys.totalElements ne 0}" class="mt-2 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:class="${replys.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/member/myPage(reply_page=${pagingReply.prevPageNumber})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <th:block
+                            th:with="start = ${pagingReply.startPageNumberInThisPageGroup}, end = ${pagingReply.lastPageNumberInThisPageGroup}">
+                        <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}"
+                            th:class="${replys.pageable.pageNumber eq num - 1} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/member/myPage(reply_page=${num} - 1)}"
+                               th:text="${num}">1</a>
+                        </li>
+                    </th:block>
+                    <li class="page-item" th:class="${replys.last} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/member/myPage(reply_page=${pagingReply.nextPageNumber})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </section>
+    </div>
+
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+</html>

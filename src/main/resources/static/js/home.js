@@ -1,15 +1,17 @@
+/*
 $(document).ready(function () {
     var urlParams = new URLSearchParams(window.location.search);
     var selectedSortOrder = urlParams.get("sort");
 
     if (selectedSortOrder) {
         if (selectedSortOrder === 'createdDate,asc') {
-            $("#sortOrder").val("asc").prop('selected', true);
+            $("#sortOrder").val("createdDate,asc").prop('selected', true);
         } else {
-            $("#sortOrder").val("desc").prop('selected', true);
+            $("#sortOrder").val("createdDate,desc").prop('selected', true);
         }
     }
 });
+*/
 
 function changeSortOrder() {
     var selectedSearchBy = document.getElementById("searchBy").value;

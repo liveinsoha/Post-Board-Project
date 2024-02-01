@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@ToString(exclude = {"replies", "createdDate", "member"})
+@ToString(exclude = {"replies", "member"})
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -44,6 +44,11 @@ public class Board {
 
     @CreatedDate
     LocalDateTime createdDate;
+
+    public void editBoard(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 
 }

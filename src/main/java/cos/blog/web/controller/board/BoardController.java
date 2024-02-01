@@ -2,10 +2,7 @@ package cos.blog.web.controller.board;
 
 import cos.blog.config.security.PrincipalDetails;
 import cos.blog.web.controller.BaseResponse;
-import cos.blog.web.dto.BoardResponseDto;
-import cos.blog.web.dto.ReplyRequestDto;
-import cos.blog.web.dto.ReplyResponseDto;
-import cos.blog.web.dto.ResponseDto;
+import cos.blog.web.dto.*;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.service.BoardService;
 import jakarta.persistence.EntityManager;
@@ -30,20 +27,21 @@ public class BoardController {
 
     @GetMapping("/board/createBoard")
     public String createBoard(Model model) {
-
-        model.addAttribute("boardForm", new BoardResponseDto());
+        model.addAttribute("boardForm", new BoardForm());
         return "/board/boardForm";
     }
 
+
+
     @PostMapping("/board/createBoard")
-    public String postBoard(@ModelAttribute BoardResponseDto boardFormDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public String postBoard(@ModelAttribute BoardForm boardFormDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
         boardService.addBoard(boardFormDto.getTitle(), boardFormDto.getContent(), principalDetails.getMember());
         return "redirect:/";
     }
 
     @GetMapping("/board/details/{boardId}")
     public String details(@PathVariable Long boardId, Model model) {
-        Board board = boardService.findById(boardId);
+        Board board = boardService.findByIdWithMember(boardId);
         List<ReplyResponseDto> replyInBoard = boardService.findReplyInBoard(boardId);
         BoardResponseDto boardFormDto = new BoardResponseDto(board);
         boardFormDto.setReplys(replyInBoard);
@@ -52,7 +50,23 @@ public class BoardController {
         return "/board/details";
     }
 
-    @GetMapping("/board/reply/{boardId}")
+    @GetMapping("/board/edit/{boardId}")
+    public String editForm(Model model, @PathVariable Long boardId) {
+        log.info("게시판 수정 Get");
+        Board board = boardService.findById(boardId);
+        System.out.println("board = " + board);
+        model.addAttribute("editForm", new BoardForm(board));
+        return "/board/editForm";
+    }
+
+    @PostMapping("/board/edit/{boardId}")
+    public String editBoard(@PathVariable Long boardId, BoardForm editForm) {
+        log.info("게시판 수정 Post");
+        boardService.editBoard(boardId, editForm.getTitle(), editForm.getContent());
+        return "redirect:/board/details/" + boardId;
+    }
+
+    @PostMapping("/board/reply/{boardId}")
     @ResponseBody
     public ResponseEntity<Object> addReply(ReplyRequestDto replyRequestDto) {
         boardService.addReply(replyRequestDto.getMemberId(), replyRequestDto.getBoardId(), replyRequestDto.getContent());

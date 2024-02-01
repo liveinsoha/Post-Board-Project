@@ -1,6 +1,6 @@
 package cos.blog.web.controller;
 
-import cos.blog.web.controller.board.PagingBoardsDto;
+import cos.blog.web.controller.board.dto.PagingBoardDto;
 import cos.blog.web.dto.BoardResponseDto;
 import cos.blog.web.dto.BoardSearchDto;
 import cos.blog.web.model.entity.Board;
@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -26,7 +25,7 @@ public class HomeController {
 
     @GetMapping("")
     public String home(Model model,
-                       @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
+                       @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
                        Pageable pageable, BoardSearchDto boardSearchDto) {
 
         log.info("pageable = {}", pageable);
@@ -34,7 +33,12 @@ public class HomeController {
 
         Page<Board> boards = boardService.findAllPaging(pageable, boardSearchDto);
         Page<BoardResponseDto> responses = boards.map(BoardResponseDto::new);
-        PagingBoardsDto paging = new PagingBoardsDto(responses);
+        PagingBoardDto paging = new PagingBoardDto(responses);
+        System.out.println("responses.getTotalPages() = " + responses.getTotalPages());
+
+        System.out.println("paging = " + paging);
+        System.out.println("responses.getContent() = " + responses.getContent());
+        System.out.println("boardSearchDto = " + boardSearchDto);
 
         model.addAttribute("boardSearchDto", boardSearchDto);
         model.addAttribute("responses", responses);
@@ -49,7 +53,6 @@ public class HomeController {
                                         Pageable pageable, BoardSearchDto boardSearchDto) {
         Page<Board> boards = boardService.findAllPaging(pageable, boardSearchDto);
         Page<BoardResponseDto> responses = boards.map(BoardResponseDto::new);
-
 
         return responses;
     }
