@@ -42,8 +42,6 @@ public class BlogApplication {
 
     public static class InitService {
 
-        @Autowired
-        BCryptPasswordEncoder bCryptPasswordEncoder;
 
         @Autowired
         MemberService memberService;
@@ -55,7 +53,7 @@ public class BlogApplication {
         @PostConstruct
         void initData() {
             for (int i = 1; i <= 10; i++) {
-                Member member = new Member("kimkim" + i, bCryptPasswordEncoder.encode("aaa"), "aaa");
+                Member member = new Member("kimkim" + i,"이원준", "aaa", "aaa");
                 Long memberId = memberService.join(member);
                 for (int j = 1; j <= 3; j++) {
                     Long boardId = boardService.addBoard("title" + j, "content", member);

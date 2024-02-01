@@ -8,7 +8,7 @@ $(function () {
     let chk1 = false, chk2 = false, chk3 = false, chk4 = false;
 
     // 1. ID 입력값 검증
-    $('#user_id').keyup(function () {
+    $('#account').keyup(function () {
         if ($(event.target).val() === '') {
             $(event.target).css('background', 'pink');
             $('#idChk').html('<b style="font-size: 14px; color:blue">[아이디는 필수 정보입니다.]</b>');
@@ -81,7 +81,7 @@ $(function () {
     });
 
     // 4. 이름 입력값 검증
-    $('#user_name').keyup(function () {
+    $('#name').keyup(function () {
         if ($(event.target).val() === '') {
             $(event.target).css('background', 'pink');
             $('#nameChk').html('<b style="font-size: 14px; color:blue">[이름은 필수 입력값입니다.]</b>');
@@ -101,25 +101,28 @@ $(function () {
     // 사용자가 입력하는 4가지 데이터 중 단 하나라도 문제가 있으면 회원가입 처리하면 안됨
     $('#signup-btn').click(function () {
         if (chk1 && chk2 && chk3 && chk4) {
-            const id = $('#user_id').val();
+            const account = $('#account').val();
             const pw = $('#password').val();
-            const name = $('#user_name').val();
+            const name = $('#name').val();
+            const email = $('#email').val();
+
 
             const user = {
-                'account': id,
+                'account': account,
                 'password': pw,
-                'name': name
+                'name': name,
+                'email' : email
             };
 
             $.ajax({
                 type: 'POST',
-                url: '/blog/member/join1',
+                url: '/blog/member/join',
                 contentType: "application/json; charset=utf-8;",
                 data: JSON.stringify(user),
                 success: function (result) {
                     console.log('통신 성공 : ' + result);
                     alert("회원가입을 환영합니다.");
-                    location.href = '/';
+                    location.href = '/blog/login';
                 },
                 error: function () {
                     alert("회원가입 실패");

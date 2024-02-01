@@ -20,7 +20,7 @@ public class WebServerConfig implements WebMvcConfigurer {
         log.info("BoardAuthInterceptor 등록");
 
         registry.addInterceptor(boardAuthInterceptor)
-                .addPathPatterns("/board/edit/**");
+                .addPathPatterns("/board/edit/**", "/member/edit");
 
     }
 }

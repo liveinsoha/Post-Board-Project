@@ -33,7 +33,7 @@ public class ReplyRepositoryCustomImpl implements ReplyRepositoryCustom {
     @Override
     public List<ReplyResponseDto> findReplyByBoard(Long boardId) {
 
-        List<Tuple> tuples = query.select(reply.id, reply.board.title, reply.content, reply.member.name, reply.createdTime, reply.member.id)
+        List<Tuple> tuples = query.select(reply.id, reply.board.title, reply.content, reply.member.account, reply.createdTime, reply.member.id)
                 .from(reply)
                 .join(reply.member, QMember.member)
                 .join(reply.board, QBoard.board)
@@ -46,7 +46,7 @@ public class ReplyRepositoryCustomImpl implements ReplyRepositoryCustom {
         for (Tuple tuple : tuples) {
             Long id = tuple.get(reply.id);
             Long replyAuthorId = tuple.get(reply.member.id);
-            String replyAuthor = tuple.get(reply.member.name);
+            String replyAuthor = tuple.get(reply.member.account);
             String boardTitle = tuple.get(reply.board.title);
             String content = tuple.get(reply.content);
             LocalDateTime createdTime = tuple.get(reply.createdTime);
@@ -64,7 +64,7 @@ public class ReplyRepositoryCustomImpl implements ReplyRepositoryCustom {
 
         List<OrderSpecifier> ORDER = QuerydslUtil.getAllOrderSpecifiers(pageable);
 
-        List<Tuple> tuples = query.select(reply.id, reply.board.title, reply.content, reply.member.name, reply.createdTime, reply.board.id)
+        List<Tuple> tuples = query.select(reply.id, reply.board.title, reply.content, reply.member.account, reply.createdTime, reply.board.id)
                 .from(reply)
                 .join(reply.member, QMember.member)
                 .join(reply.board, QBoard.board)
@@ -86,7 +86,7 @@ public class ReplyRepositoryCustomImpl implements ReplyRepositoryCustom {
         for (Tuple tuple : tuples) {
             Long id = tuple.get(reply.id);
             Long boardId = tuple.get(reply.board.id);
-            String replyAuthor = tuple.get(reply.member.name);
+            String replyAuthor = tuple.get(reply.member.account);
             String boardTitle = tuple.get(reply.board.title);
             String content = tuple.get(reply.content);
             LocalDateTime createdTime = tuple.get(reply.createdTime);

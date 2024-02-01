@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+
+<th:block layout:fragment="css"> <!--각 페이지의 css 만들기-->
+    <link rel="stylesheet" th:href="@{/css/member/form.css}" type="text/css">
+</th:block>
+
+<th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
+</th:block>
+
+<div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
+
+
+
+    <form th:object = ${member}>
+
+        <div class="d-flex justify-content-end">
+            <button type="button"
+                    th:onclick="|location.href='@{/member/edit/{memberId}(memberId=${#authentication.principal.member.id})}'|"
+                    id="signup-btn" class="btn btn-primary ">수정</button>
+        </div>
+
+        <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}"/>
+        <div class="form-group">
+            <label th:for="account" for="account">ID:</label>
+            <input type="text" class="form-control" th:value="*{account}"  id="account" readonly>
+        </div>
+        <div class="form-group">
+            <label  th:for="name" for="name">Name:</label>
+            <input type="text" class="form-control" th:value="*{name}"  id="name" readonly>
+        </div>
+        <div class="form-group">
+            <label  th:for="email"  for="email">Email address:</label>
+            <input type="email" class="form-control" th:value="*{email}" id="email" readonly>
+        </div>
+
+    </form>
+
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+</html>

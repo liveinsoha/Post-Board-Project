@@ -181,7 +181,7 @@ th:value="${#authentication.principal.member.id}
 
 ## <script src="https://code.jquery.com/jquery-3.5.1.js"></script> 메인 레이아웃에만 추가하면 되나??
 네
-## ajax로 서버에 데이터 전송시 객체가 아닌 String을 전송할 때는 JSON.stringify()를 하면 "" 가 붙는다 -> 그냥 string을 보내자
+## ajax로 서버에  JSON.stringify()를 하면 "" 가 붙는다 -> 그냥 string을 보내자
 ````agsl
  $.ajax({
                 type: 'POST',
@@ -639,3 +639,46 @@ String showUsers(Model model,
 ### 로그 찍어본 결과
 principal = PrincipalDetails(member=Member(id=1, name=kimkim1, password=$2a$10$0fRSMTimY.Wakupom7D52ejrrPyDAxZUmFi.g5tM0zRB1GpeJTbK., email=aaa, role=ROLE_MEMBER))
 pathVariables = {boardId=3}
+
+## ajax로 폼의 요소들을 자바스크립트 객체로 생성하여 서버로 요청할 수도 있지만, 
+## 폼의 submit 기능을 이용하도록 onclick 자바스크립트 함수를 매핑할 수도 있다.
+```agsl
+ <button type="button" class="btn btn-primary" onclick="signin()">Submit</button>
+//
+ function signin(){
+    const account = $("#account").val();
+    const password = $("#password").val();
+
+    if(account.trim() == '' || password.trim() == ''){
+        alert('아이디 또는 비밀번호를 입력해주세요');
+        return false;
+    }
+    $('form[name="login"]').submit();
+}
+
+
+```
+
+## 인증 아이디로 account필드를 쓸 경우 여기를 수정해야 한다
+````agsl
+   @Override
+    public String getPassword() {
+        return member.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return member.getAccount();  // 이 곳 수정
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+````

@@ -14,6 +14,11 @@
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
     <div class="container">
+        <div class="d-flex justify-content-end">
+            <button type="button"
+                    th:onclick="|location.href='@{/member/details/{memberId}(memberId=${#authentication.principal.member.id})}'|"
+                    id="signup-btn" class="btn btn-primary ">회원정보 보기</button>
+        </div>
         <h4>my posts</h4>
         <table class="table table-striped">
             <thead>

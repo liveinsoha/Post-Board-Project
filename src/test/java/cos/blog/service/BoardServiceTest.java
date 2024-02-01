@@ -33,12 +33,12 @@ class BoardServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        blogWriter = new Member("Lee", "aaa", "qqq");
+        blogWriter = new Member("Lee", "이이", "aaa", "qqq");
         memberService.join(blogWriter);
         System.out.println(blogWriter.getRole().toString());
         log.info("member = {}", blogWriter);
 
-        replyWriter = new Member("ReplyWriter", "aaa", "sss");
+        replyWriter = new Member("ReplyWriter", "이이", "aaa", "sss");
         memberService.join(replyWriter);
     }
 

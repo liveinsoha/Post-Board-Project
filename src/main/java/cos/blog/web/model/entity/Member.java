@@ -1,11 +1,14 @@
 package cos.blog.web.model.entity;
 
+import cos.blog.web.dto.MemberFormDto;
+import cos.blog.web.dto.UpdateMemberDto;
 import cos.blog.web.model.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.sql.rowset.spi.SyncResolver;
 import java.time.LocalDateTime;
 
 @ToString(exclude = {"createdDate"})
@@ -17,7 +20,8 @@ import java.time.LocalDateTime;
 @Entity
 public class Member {
 
-    public Member(String name, String password, String email) {
+    public Member(String account, String name, String password, String email) {
+        this.account = account;
         this.name = name;
         this.password = password;
         this.email = email;
@@ -28,6 +32,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MEMBER_ID")
     private Long id;
+
+    @Column(nullable = false)
+    private String account;
 
     @Column(nullable = false)
     private String name;
@@ -55,8 +62,19 @@ public class Member {
         this.role = RoleType.ROLE_MEMBER;
     }
 
-    public static Member of(String name, String password, String email) {
-        return new Member(name, password, email);
+    public static Member of(String account, String name, String password, String email) {
+        return new Member(account, name, password, email);
+    }
+
+    public void editMember(UpdateMemberDto updateForm) {
+        this.account = updateForm.getAccount();
+        this.name = updateForm.getName();
+        this.password = updateForm.getPassword();
+        this.email = updateForm.getEmail();
+    }
+
+    public void setEncodedPw(String encoded) {
+        this.password = encoded;
     }
 
 }

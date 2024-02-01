@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/mainLayout}">
 
@@ -9,25 +10,30 @@
 </th:block>
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
-    <script th:src="@{/js/member/join.js}"></script>
+    <script th:src="@{/js/member/edit.js}"></script>
 </th:block>
 
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
     <form>
+        <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}"/>
         <div class="form-group">
-            <label  for="account">ID:</label>
+            <label for="account">ID:</label>
             <input type="text" class="form-control" placeholder="Enter ID" id="account">
             <div id="idChk"></div>
         </div>
         <div class="form-group">
-            <labelfor="password">Password:</label>
-            <input type="password" class="form-control" placeholder="Enter password" id="password">
-            <div id="pwChk"></div>
+            <label for="currentPw">current Password:</label>
+            <input type="password" class="form-control" placeholder="Enter password" id="currentPw">
         </div>
         <div class="form-group">
-            <label  for="password_check">Password:</label>
-            <input type="password" class="form-control" placeholder="password check" id="password_check">
+            <label  for="password">new Password:</label>
+            <input type="password" class="form-control" placeholder="new password" id="password">
+            <div id="pwChk1"></div>
+        </div>
+        <div class="form-group">
+            <label  for="password_check">new Password:</label>
+            <input type="password" class="form-control" placeholder="new password" id="password_check">
             <div id="pwChk2"></div>
         </div>
         <div class="form-group">
@@ -39,13 +45,8 @@
             <label  for="email">Email address:</label>
             <input type="email" class="form-control" placeholder="Enter email" id="email">
         </div>
-        <div class="form-group form-check">
-            <label class="form-check-label">
-                <input class="form-check-input" type="checkbox"> Remember me
-            </label>
-        </div>
 
-        <button type="button" id="signup-btn" class="btn btn-primary">Submit</button>
+        <button type="button" id="signup-btn" class="btn btn-primary">수정</button>
     </form>
 
 </div> <!--각 페이지의 컨텐츠 만들기 끝-->

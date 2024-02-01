@@ -32,6 +32,10 @@
             </th:block>
         </div>
 
+        <label for="writer" th:for="writer">Title</label>
+        <input type="text" th:value="*{writer}" class="form-control" placeholder="writer" id="writer" readonly>
+
+
         <label for="title" th:for="title">Title</label>
         <input type="text" th:value="*{title}" class="form-control" placeholder="title" id="title" readonly>
 

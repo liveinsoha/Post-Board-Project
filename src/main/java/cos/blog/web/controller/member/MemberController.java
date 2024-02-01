@@ -8,6 +8,7 @@ import cos.blog.web.model.entity.Member;
 import cos.blog.web.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,9 +27,10 @@ import java.util.Optional;
 @Slf4j
 public class MemberController {
 
-    private BCryptPasswordEncoder passwordEncoder;
 
     private final MemberService memberService;
+
+
 
     @GetMapping("/member/myPage")
     public String myPage(Model model,
@@ -45,27 +47,61 @@ public class MemberController {
         System.out.println("pagingReplyDto = " + pagingReplyDto);
 
         model.addAttribute("boards", boardResponses);
-        model.addAttribute("replys",replyResponses);
+        model.addAttribute("replys", replyResponses);
         model.addAttribute("pagingBoard", pagingBoardDto);
         model.addAttribute("pagingReply", pagingReplyDto);
         return "/member/myPage";
     }
 
     @GetMapping("/member/join")
-    public String join(Model model) {
-        model.addAttribute("joinFormDto", new JoinFormDto());
-        return "/member/joinForm1";
+    public String join() {
+        //    model.addAttribute("joinFormDto", new JoinFormDto());
+        return "/member/joinForm";
     }
 
     @PostMapping("/member/join")
-    public String join(@ModelAttribute JoinFormDto joinFormDto) {
+    public String join(@RequestBody MemberFormDto joinFormDto) {
         log.info("joinFormDto = {}", joinFormDto);
 
-        Member member = Member.of(joinFormDto.getName(), passwordEncoder.encode(joinFormDto.getPassword()), joinFormDto.getEmail());
+        Member member = Member.of(joinFormDto.getAccount(), joinFormDto.getName(), joinFormDto.getPassword(), joinFormDto.getEmail());
         log.info("member = {}", member);
         memberService.join(member);
 
-        return "redirect:/";
+        return "redirect:/login";
+    }
+
+
+    @GetMapping("/member/details/{memberId}")
+    public String details(@PathVariable Long memberId, Model model) {
+        Member member = memberService.findById(memberId);
+        MemberFormDto memberFormDto = new MemberFormDto(member);
+        model.addAttribute("member", memberFormDto);
+        return "/member/details";
+    }
+
+    @GetMapping("/member/edit/{memberId}")
+    public String edit(@PathVariable Long memberId, Model model) {
+        Member member = memberService.findById(memberId);
+        MemberFormDto memberFormDto = new MemberFormDto(member);
+        model.addAttribute("member", memberFormDto);
+        return "/member/editForm";
+    }
+
+
+    /**
+     * 현재 비밀번호 확인하고, 옳지 않을 경우 false, 옳을 경우 변경을 완료하고 details로 리다이렉트
+     */
+    @PostMapping("/member/edit/{memberId}")
+    @ResponseBody
+    public boolean edit(@PathVariable Long memberId,
+                        @RequestBody UpdateMemberDto updateForm,
+                        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        if (memberService.checkPw(memberId, updateForm.getCurrentPw())) {
+            Member member = memberService.editMember(memberId, updateForm);
+            principalDetails.setMember(member); //세션 수정
+            return true;
+        }
+        return false;
     }
 
     @PostMapping("/member/join1")
@@ -79,7 +115,7 @@ public class MemberController {
     @ResponseBody
     public String checkId(@RequestBody String checkId) {
         System.out.println("checkId = " + checkId);
-        Optional<Member> result = memberService.findByName(checkId);
+        Optional<Member> result = memberService.findByAccount(checkId);
         if (result.isEmpty()) {
             return "Available";
         } else {

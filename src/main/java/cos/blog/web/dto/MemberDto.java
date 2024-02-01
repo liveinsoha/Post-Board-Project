@@ -12,12 +12,14 @@ public class MemberDto {
 
     public MemberDto(Member member) {
         this.id = member.getId();
+        this.account = member.getAccount();
         this.name = member.getName();
         this.password = member.getPassword();
         this.email = member.getEmail();
     }
 
     private Long id;
+    private String account;
     private String name;
     private String password;
     private String email;

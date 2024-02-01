@@ -36,7 +36,7 @@ public class SecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .usernameParameter("name") //html의 name속성 쿼리파라미터 요청,,
+                                .usernameParameter("account") //html의 account 속성 쿼리파라미터 요청,,
                                 .passwordParameter("password") //
                                 .successHandler(new LoginSuccessHandler())
                                 .failureHandler(new LoginFailHandler())
