@@ -17,7 +17,7 @@ public class BoardResponseDto {
     String writer;
     Long writerId;
     List<ReplyResponseDto> replys;
-    LocalDateTime createdDate;
+    LocalDateTime createdTime;
 
 
     public BoardResponseDto(Board board) {
@@ -26,6 +26,6 @@ public class BoardResponseDto {
         this.content = board.getContent();
         this.writerId = board.getMember().getId();
         this.writer = board.getMember().getAccount();
-        this.createdDate = board.getCreatedDate();
+        this.createdTime = board.getCreatedTime();
     }
 }

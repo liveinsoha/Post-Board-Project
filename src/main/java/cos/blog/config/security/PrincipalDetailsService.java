@@ -2,16 +2,13 @@ package cos.blog.config.security;
 
 import cos.blog.web.exception.login.LoginFailException;
 import cos.blog.web.model.entity.Member;
-import cos.blog.web.repository.MemberRepository;
+import cos.blog.web.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import javax.security.auth.login.LoginException;
-import java.util.Optional;
 
 @Service
 @Slf4j

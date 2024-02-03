@@ -25,9 +25,9 @@ public class QuerydslTest {
     @Test
     void test() {
 
-        Member member = new Member("aaa", "sss", "ddd");
+        Member member = Member.of("aaa","aaa","aaa","aaa");
         em.persist(member);
-        Board savedBoard = new Board("qqq", "www", member);
+        Board savedBoard =  Board.createBoard(member,"qqq", "www" );
         em.persist(savedBoard);
         em.flush();
         em.clear();

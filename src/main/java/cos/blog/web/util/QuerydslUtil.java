@@ -35,15 +35,15 @@ public class QuerydslUtil {
                 log.info("정렬 기준 고른다");
                 log.info("direction = {}", direction);
                 switch (order.getProperty()) {
-                    case "createdDate":
-                        log.info("정렬 기준 Board.createdDate");
-                        OrderSpecifier<?> orderCreatedDate = QuerydslUtil.getSortedColumn(direction, QBoard.board, "createdDate");
-                        ORDERS.add(orderCreatedDate);
+                    case "board_createdTime":
+                        log.info("정렬 기준 Board.createdTime");
+                        OrderSpecifier<?> orderBoardByCreatedTime = QuerydslUtil.getSortedColumn(direction, QBoard.board, "createdTime");
+                        ORDERS.add(orderBoardByCreatedTime);
                         break;
-                    case "createdTime":
+                    case "reply_createdTime":
                         log.info("정렬 기준 Reply.createdTime");
-                        OrderSpecifier<?> orderCreatedTime = QuerydslUtil.getSortedColumn(direction, QReply.reply, "createdTime");
-                        ORDERS.add(orderCreatedTime);
+                        OrderSpecifier<?> orderReplyByCreatedTime = QuerydslUtil.getSortedColumn(direction, QReply.reply, "createdTime");
+                        ORDERS.add(orderReplyByCreatedTime);
                         break;
                     case "member":
                         log.info("정렬 기준 Member.name");

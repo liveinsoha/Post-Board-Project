@@ -17,13 +17,8 @@ import java.util.List;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Board {
+public class Board extends BaseEntity {
 
-    public Board(String title, String content, Member member) {
-        this.title = title;
-        this.content = content;
-        this.member = member;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,15 +34,24 @@ public class Board {
     @JoinColumn(name = "Member_ID")
     Member member;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true) //연관관계 끊어진 경우 엔티티 제거
     List<Reply> replies = new ArrayList<>();
 
-    @CreatedDate
-    LocalDateTime createdDate;
+    public void addReply(Reply reply) {
+        replies.add(reply);
+    }
 
     public void editBoard(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public static Board createBoard(Member member, String title, String content) {
+        Board board = new Board();
+        board.member = member;
+        board.title = title;
+        board.content = content;
+        return board;
     }
 
 

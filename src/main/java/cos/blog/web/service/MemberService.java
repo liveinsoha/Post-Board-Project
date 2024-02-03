@@ -1,18 +1,15 @@
 package cos.blog.web.service;
 
 
-import cos.blog.web.dto.MemberFormDto;
 import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.dto.UpdateMemberDto;
 import cos.blog.web.exception.NoSuchMemberException;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
-import cos.blog.web.model.entity.Reply;
-import cos.blog.web.repository.MemberRepository;
+import cos.blog.web.repository.member.MemberRepository;
 import cos.blog.web.repository.board.BoardRepository;
 import cos.blog.web.repository.reply.ReplyRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

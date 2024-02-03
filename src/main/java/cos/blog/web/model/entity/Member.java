@@ -11,14 +11,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.sql.rowset.spi.SyncResolver;
 import java.time.LocalDateTime;
 
-@ToString(exclude = {"createdDate"})
+@ToString(exclude = {"createdTime"})
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @Entity
-public class Member {
+public class Member extends BaseEntity{
 
     public Member(String account, String name, String password, String email) {
         this.account = account;
@@ -49,8 +49,6 @@ public class Member {
     //Member, MANAGER, ADMIN
     private RoleType role;
 
-    @CreatedDate
-    LocalDateTime createdDate;
 
     public void updateMember(String name, String password, String email) {
         this.name = name;

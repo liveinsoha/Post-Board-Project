@@ -17,7 +17,6 @@
 
 
     <form th:object = ${member}>
-
         <div class="d-flex justify-content-end">
             <button type="button"
                     th:onclick="|location.href='@{/member/edit/{memberId}(memberId=${#authentication.principal.member.id})}'|"

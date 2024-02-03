@@ -25,7 +25,7 @@ public class HomeController {
 
     @GetMapping("")
     public String home(Model model,
-                       @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
+                       @PageableDefault(size = 5, sort = "board_createdTime", direction = Sort.Direction.DESC)
                        Pageable pageable, BoardSearchDto boardSearchDto) {
 
         log.info("pageable = {}", pageable);
@@ -49,7 +49,7 @@ public class HomeController {
     @GetMapping("/paging")
     @ResponseBody
     public Page<BoardResponseDto> main2(Model model,
-                                        @PageableDefault(page = 0, size = 5, sort = "createdDate", direction = Sort.Direction.DESC)
+                                        @PageableDefault(page = 0, size = 5, sort = "board_createdTime", direction = Sort.Direction.DESC)
                                         Pageable pageable, BoardSearchDto boardSearchDto) {
         Page<Board> boards = boardService.findAllPaging(pageable, boardSearchDto);
         Page<BoardResponseDto> responses = boards.map(BoardResponseDto::new);

@@ -1,4 +1,4 @@
-package cos.blog.web.repository;
+package cos.blog.web.repository.member;
 
 import cos.blog.web.model.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

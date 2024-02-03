@@ -34,8 +34,8 @@ public class MemberController {
 
     @GetMapping("/member/myPage")
     public String myPage(Model model,
-                         @Qualifier("board") @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable boardPageable,
-                         @Qualifier("reply") @PageableDefault(sort = "createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,
+                         @Qualifier("board") @PageableDefault(size = 5, sort = "board_createdTime", direction = Sort.Direction.DESC) Pageable boardPageable,
+                         @Qualifier("reply") @PageableDefault(sort = "reply_createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,
                          @AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getMember().getId();
         Page<BoardResponseDto> boardResponses = memberService.findBoardByMember(memberId, boardPageable).map(BoardResponseDto::new);

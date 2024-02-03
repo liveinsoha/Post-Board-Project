@@ -43,8 +43,8 @@
             <div class="form-inline justify-content-end">
                 <label for="sortOrder" class="mr-2">Sort Order:</label>
                 <select id="sortOrder" onchange="changeSortOrder()">
-                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,desc'" id="desc" value="createdDate,desc">Latest</option>
-                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,asc'" id="asc" value="createdDate,asc">Oldest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'board_createdTime,desc'" id="desc" value="board_createdTime,desc">Latest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'board_createdTime,asc'" id="asc" value="board_createdTime,asc">Oldest</option>
                 </select>
             </div>
             <p></p>

@@ -468,7 +468,7 @@ $(document).ready(function () {
     var selectedSortOrder = urlParams.get("sort");
 
     if (selectedSortOrder) {
-        if (selectedSortOrder === 'createdDate,asc') {
+        if (selectedSortOrder === 'createdTime,asc') {
             $("#sortOrder").val("asc").prop('selected', true);
         } else {
             $("#sortOrder").val("desc").prop('selected', true);
@@ -487,7 +487,7 @@ $(document).ready(function () {
     var selectedSortOrder = urlParams.get("sort");
 
     if (selectedSortOrder) {
-        if (selectedSortOrder === 'createdDate,asc') {
+        if (selectedSortOrder === 'createdTime,asc') {
             $("#sortOrder").val("asc").prop('selected', true);
         } else {
             $("#sortOrder").val("desc").prop('selected', true);
@@ -527,7 +527,7 @@ String showUsers(Model model,
 ````agsl
   @GetMapping("/member/myPage")
     public String myPage(Model model,
-                         @Qualifier("board") @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable boardPageable,
+                         @Qualifier("board") @PageableDefault(size = 5, sort = "createdTime", direction = Sort.Direction.DESC) Pageable boardPageable,
                          @Qualifier("reply") @PageableDefault(sort = "createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,
                          @AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getMember().getId();
@@ -564,8 +564,8 @@ String showUsers(Model model,
             <div class="form-inline justify-content-end">
                 <label for="sortOrder" class="mr-2">Sort Order:</label>
                 <select id="sortOrder" onchange="changeSortOrder()">
-//쿼리파라미터 접근    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,desc'" id="desc" value="createdDate,desc">Latest</option>
-                    <option  th:selected="${#strings.toString(param.sort)} == 'createdDate,asc'" id="asc" value="createdDate,asc">Oldest</option>
+//쿼리파라미터 접근    <option  th:selected="${#strings.toString(param.sort)} == 'createdTime,desc'" id="desc" value="createdTime,desc">Latest</option>
+                    <option  th:selected="${#strings.toString(param.sort)} == 'createdTime,asc'" id="asc" value="createdTime,asc">Oldest</option>
                 </select>
             </div>
 ````
@@ -584,7 +584,7 @@ String showUsers(Model model,
                     John
                 </td>
                 <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|"
-                    th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd')}">2022-12-12
+                    th:text="${#temporals.format(board.createdTime, 'yyyy-MM-dd')}">2022-12-12
                 </td>
 
                 <td>
@@ -681,4 +681,216 @@ pathVariables = {boardId=3}
         return true;
     }
 
+````
+
+
+## enum타입으로 폼데이터를 받을 수 있다. 
+````agsl
+
+
+ <select name="gender" id="gender" class="form-select p-3 ms-1 mb-1">
+        <option value="MEN">남성</option>
+        <option value="WOMEN">여성</option>
+        <option value="SECRET">비공개</option>
+      </select>
+      
+      
+      @Getter
+@AllArgsConstructor
+@ToString
+public class RegisterRequest {
+    private String email;
+    private String password;
+    private String passwordConfirm;
+    private String name;
+    private String birthYear;
+    private Gender gender;
+    private String phoneNo;
+}
+````
+
+## 여러 파라미터로 멤버를 조회할 수 있는 메서드를 만든다.
+
+````agsl
+public Member findMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일로 회원을 찾을 수 없습니다. 이메일을 다시 확인해주세요."));
+    }
+
+    public Member findMember(Principal principal) {
+        if(principal == null){
+            throw new NotLoginException("로그인 하셔야 이용할 수 있습니다.");
+        }
+
+        String email = principal.getName();
+        return findMember(email);
+    }
+
+    public Member findMember(Long memberId){
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("해당 아이디로 회원을 찾을 수 없습니다. 회원 아이디를 다시 확인해주세요."));
+    }
+````
+
+## 프론트에서 검증했지만, 벡엔드에서도 검증하는 메서드를 만든다.
+
+````agsl
+  private void validatePhoneNo(String phoneNo) {
+        if(phoneNo == null || phoneNo.trim().equals("")){
+            throw new IllegalArgumentException("핸드폰 번호를 올바르게 입력해주세요.");
+        }
+
+        if(phoneNo.length() != 11){
+            throw new IllegalArgumentException("핸드폰 번호를 올바르게 입력해주세요.");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if(email == null || email.trim().equals("")){
+            throw new IllegalArgumentException("이메일을 올바르게 입력해주세요.");
+        }
+
+        String[] splitEmail = email.split("@");
+        if(splitEmail[0].length() < 4 || splitEmail[0].length() > 24){
+            throw new IllegalArgumentException("이메일을 올바르게 입력해주세요.");
+        }
+    }
+````
+
+## 일대다 컬렉션 조회를 할 때 페치조인을 하면 
+
+컬렉션을 fetch join하는 순간 페이징이 불가능해진다.
+
+컬렉션을 페치 조인하면 1 : 다 조인이 발생하므로 데이터가 예측할 수 없이 증가한다.
+1 : 다에서 1을 기준으로 페이징을 하는 것이 목적인데 데이터는 다(N)를 기준으로 row(행)가 생성된다.
+Order를 기준으로 페이징 하고 싶은데, 다(N)인 OrderItem을 조인하면 OrderItem이 기준이 되어 버린다.
+이 경우 하이버네이트는 경고 로그를 남기고 모든 DB 데이터를 읽어서 메모리에서 페이징을 시도하게 되고 최악의 경우 장애가 발생한다.
+( 1 : 1 관계는 fetch join을 해도 문제가 발생하지 않는다. )
+
+
+컬렉션 엔티티를 조회하고 페이징 기능까지 함께 사용하려면 어떻게 해야할까?
+방법
+먼저 ToOne (OneToMany, OneToOne) 관계를 모두 페치 조인한다. (ToOne 관계는 row수를 증가시키지 않기 때문에 페이징 쿼리에 영향을 주지 않는다. 즉, 데이터 중복 문제 X)
+컬렉션은 지연 로딩으로 조회한다. (fetch 조인 사용 x)
+지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size 또는 @BatchSize 를 적용한다.
+
+이 옵션들을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size IN 키워드를 사용해 조회한다.- hibernate.default_batch_fetch_size: 글로벌 설정 ( 주로 사용 )
+
+default_batch_fetch_size의 작동원리
+이러한 결과를 통해 알 수 있는 것은,
+JPA는 지연로딩할 객체를 만났을 때,
+default_batch_fetch_size개수만큼 모일 때까지 쌓아두었다가,
+해당 개수가 다 모이면 쿼리를 보낸다는 것을 알 수 있다!
+https://velog.io/@jadenkim5179/Spring-defaultbatchfetchsize%EC%9D%98-%EC%9E%91%EB%8F%99%EC%9B%90%EB%A6%AC
+
+
+## 지연로딩 프록시 기술을 이용하기 위해 다음과 같으 기본 생성자를 protected로
+````agsl
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) //지연로딩 프록시 기술을 위함
+public class ReplyLikeLog {
+````
+
+## JPA를 사용하면서 네이티브 쿼리를 다음과 같이 사용할 수 있고, 데이터베이스의 데이터에 영향을 준다면 @Mopdify를 붙인다.
+nativeQuery=true -> 네이티브 쿼리를 쓴다.
+
+## 엔티티 생성시 불필요한 Select문을 없애기 위해, 다음과 같이 getReferenceById를 사용.
+우리가 흔히 사용하던 findById()은 eager방식의 조회기법이라면 getOne()은 lazy방식으로 조회된다.
+레퍼런스를 확인해보면 주어진 식별자를 가지고있는 엔티티의 참조를 반환한다. JPA에서 lazy loading을 사용할때 엔티티 매니저에서 getReference()를 사용하는데 getOne()도 내부적으로 이 메서드를 사용한다. 프록시를 사용하기 때문에 실제 필드에 접근할 때 db에서 조회해온다.  getOne()을 사용하고 필드에 접근하는 예시를 보자.
+
+@Transactional
+public Comment saveComment(CommentRequestDto requestDto) {
+Post post = postRepository.getReferenceById(requestDto.getPostId());
+System.out.println(post.getContent()); //필드 값 접근
+Comment comment = Comment.builder()
+.post(post)
+.content(requestDto.getContent())
+.build();
+return commentRepository.save(comment);
+}
+이런 상황이라면 필드에 접근했으므로 아래와 같이 select문이 동작한다. 만약, 식별자가 db에 존재하지 않는다면 필드 접근 시점에서 예외가 발생한다.
+
+## 테스트 실행시 쿼리를 제대로 확인하려면 영속성 컨텍스트 초기화가 필요하다
+````agsl
+   @Test
+    void test() {
+        Member member1 = memberService.findById(1L);
+
+        Board board = boardService.findById(1L);
+        System.out.println("-------------------");
+        Reply reply = boardService.addReply(member1.getId(), board.getId(), "replyContent");
+        System.out.println("-------------------");
+        Member member2 = memberService.findById(2L);
+        System.out.println("-------------------");
+        ReReply reReply = boardService.addReReply(member2.getId(), reply.getId(), "reReplyContent");
+        System.out.println("reReply = " + reReply);
+        em.flush();
+        em.clear();
+        System.out.println("-------------------");
+        boardService.deleteReReply(reReply.getId());
+        System.out.println("-------------------");
+    }
+````
+
+## 다음 테스트 코드에서 영속성 전이 쿼리를 확인할 수 있다. 연관관계 부모객체 삭제시 -> 자식객체 삭제.
+````agsl
+ @Test
+    void test() {
+        Member member1 = memberService.findById(1L);
+
+        Board board = boardService.findById(1L);
+        System.out.println("-------------------");
+        Reply reply = boardService.addReply(member1.getId(), board.getId(), "replyContent");
+        System.out.println("-------------------");
+        Member member2 = memberService.findById(2L);
+        System.out.println("-------------------");
+        ReReply reReply1 = boardService.addReReply(member2.getId(), reply.getId(), "reReplyContent1");
+        ReReply reReply2 = boardService.addReReply(member2.getId(), reply.getId(), "reReplyContent2");
+        System.out.println("reReply = " + reReply1);
+        System.out.println("reReply = " + reReply2);
+        em.flush();
+        em.clear();
+        System.out.println("-------------------");
+        boardService.deleteReply(reply.getId());
+        System.out.println("-------------------");
+    }
+    } //대댓글 삭제 쿼리 나간 후 댓글 삭제 쿼리 나간다. -> 근데 대댓글이 2개라서 delete문이 2개 나간다.. 대댓글이 1억개라면..? -> 개선이 필요.
+````
+
+## Board삭제시 단계적으로 영속성 전이 발생 확인
+````agsl
+  @Test
+    void test() {
+        Member member1 = memberService.findById(1L);
+
+        Board board = boardService.findById(1L);
+        System.out.println("-------------------");
+        Reply reply = boardService.addReply(member1.getId(), board.getId(), "replyContent");
+        System.out.println("-------------------");
+        Member member2 = memberService.findById(2L);
+        System.out.println("-------------------");
+        ReReply reReply1 = boardService.addReReply(member2.getId(), reply.getId(), "reReplyContent1");
+        ReReply reReply2 = boardService.addReReply(member2.getId(), reply.getId(), "reReplyContent2");
+        System.out.println("reReply = " + reReply1);
+        System.out.println("reReply = " + reReply2);
+        em.flush();
+        em.clear();
+        System.out.println("-------------------");
+        boardService.deleteBoard(board.getId());
+        System.out.println("-------------------");
+    } //대댓글 삭제쿼리 2개 -> 댓글 삭제쿼리 1개 -> Board삭제 쿼리 1개.
+````
+
+## 기존 Repostory에서 메서드 네이밍을 이용한 exists방식은 조인을 사용해 성능이슈가 있으므로 아래와 같이 Querydsl로 개선
+````agsl
+ @Override
+    public boolean existsByReplyId(Long replyId) {
+        Integer fetchFirst = query.selectOne()
+                .from(reReply)
+                .where(reReply.reply.id.eq(replyId))
+                .fetchFirst();//댓글Id에 해당하는 값이 없으면 null 반환.
+        return fetchFirst != null;
+
+    }
 ````

@@ -39,7 +39,7 @@ public class CRUDControllerTest {
 
     @GetMapping("/paging/member")
     public Page<MemberDto> page(
-            @PageableDefault(size = 5, page = 0, sort = "createdDate", direction = Sort.Direction.DESC)Pageable pageable){
+            @PageableDefault(size = 5, page = 0, sort = "createdTime", direction = Sort.Direction.DESC)Pageable pageable){
         Page<Member> membersPaging = memberService.findAll(pageable);
         Page<MemberDto> memberDTOs = membersPaging.map(MemberDto::new);
         return memberDTOs;

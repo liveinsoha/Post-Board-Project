@@ -2,9 +2,8 @@ package cos.blog.web.repository.reply;
 
 import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.model.entity.Member;
-import cos.blog.web.repository.MemberRepository;
+import cos.blog.web.repository.member.MemberRepository;
 import cos.blog.web.service.BoardService;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ReplyRepositoryTest {

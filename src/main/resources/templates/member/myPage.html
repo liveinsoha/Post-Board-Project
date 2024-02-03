@@ -33,7 +33,7 @@
                     John
                 </td>
                 <td th:onclick="|location.href='@{/board/details/{id}(id=${board.id})}'|"
-                    th:text="${#temporals.format(board.createdDate, 'yyyy-MM-dd')}">2022-12-12
+                    th:text="${#temporals.format(board.createdTime, 'yyyy-MM-dd')}">2022-12-12
                 </td>
 
                 <td>

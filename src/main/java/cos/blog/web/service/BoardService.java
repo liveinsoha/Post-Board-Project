@@ -4,10 +4,12 @@ import cos.blog.web.dto.BoardSearchDto;
 import cos.blog.web.dto.ReplyResponseDto;
 import cos.blog.web.model.entity.Board;
 import cos.blog.web.model.entity.Member;
+import cos.blog.web.model.entity.ReReply;
+import cos.blog.web.model.entity.Reply;
 import cos.blog.web.repository.board.BoardRepository;
-import cos.blog.web.repository.MemberRepository;
+import cos.blog.web.repository.member.MemberRepository;
+import cos.blog.web.repository.reReply.ReReplyRepository;
 import cos.blog.web.repository.reply.ReplyRepository;
-import jakarta.transaction.TransactionScoped;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,15 +28,15 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
+    private final ReReplyRepository reReplyRepository;
 
     @Transactional
-    public Long addBoard(String title, String content, Member member) {
-        Board board = new Board(title, content, member);
-        boardRepository.save(board);
-        return board.getId();
+    public Board addBoard(String title, String content, Member member) {
+        Board board = Board.createBoard(member, title, content);
+        return boardRepository.save(board);
     }
 
-    public Board findByIdWithMember(Long id){
+    public Board findByIdWithMember(Long id) {
         Board board = boardRepository.findByIdWithMember(id).orElseThrow(NoSuchElementException::new);
         return board;
     }
@@ -56,7 +58,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long boardId) { //댓글 삭제 쿼리 개선..?
         boardRepository.deleteById(boardId);
     }
 
@@ -66,14 +68,55 @@ public class BoardService {
     }
 
     @Transactional
-    public Long addReply(Long memberId, Long boardId, String content) {
-        replyRepository.mSave(memberId, boardId, content);
-        return null;
+    public Reply addReply(Long memberId, Long boardId, String content) {
+        Member member = memberRepository.getReferenceById(memberId); //엔티티 생성에 불필요한 select문 없다.
+        Board board = boardRepository.getReferenceById(boardId);
+        Reply reply = Reply.createReply(member, board, content);
+        return replyRepository.save(reply);
     }
 
     @Transactional
+    public ReReply addReReply(Long memberId, Long replyId, String content) {
+        Member member = memberRepository.getReferenceById(memberId);
+        Reply reply = replyRepository.getReferenceById(replyId);
+        ReReply reReply = ReReply.createReReply(member, reply, content);
+        return reReplyRepository.save(reReply);
+    }
+
+    @Transactional
+    public void deleteReReply(Long reReplyId) {
+        ReReply reReply = reReplyRepository.getReferenceById(reReplyId);
+        Reply parentReply = reReply.getReply();
+        if (!parentReply.isDeleted()) { /*-- 댓글이 삭제되지 않았다면 --*/
+            reReplyRepository.deleteById(reReplyId); // 대댓글만 삭제
+            return;
+        }
+        //부모 댓글이 isDeleted라면
+        reReplyRepository.deleteById(reReplyId); //대댓글 삭제 후
+
+        if (!reReplyRepository.existsByReplyId(parentReply.getId())) {// 자식 대댓글 더 존재하는 지 확인
+            replyRepository.deleteById(parentReply.getId()); // 없으면 부모댓글 엔티티 삭제.
+        }
+    }
+
+
+    /**
+     * 대댓글이 없을 경우 해당 댓글을 DB에서 그냥 삭제
+     * 대댓글이 있을 경우 댓글을 삭제하지 않고 '블락'처리하고 대댓글을 볼 수 있도록 한다. isDeleted -> 블락
+     * 대댓글이 모드 제거된 경우, 댓글이 isDelete(블락)상태라면 DB에서 댓글을 삭제한다.
+     *
+     * @param replyId
+     */
+    @Transactional
     public void deleteReply(Long replyId) {
-        replyRepository.deleteById(replyId);
+        if (reReplyRepository.existsByReplyId(replyId)) { //자식 대댓글이 있다면
+            Reply reply = replyRepository.getReferenceById(replyId);
+            reply.setDeleted();
+            return;
+        }
+
+        replyRepository.deleteById(replyId); //대댓글 없다면 댓글 엔티티 삭제.
+        //  replyRepository.deleteById(replyId); //
     }
 
 }

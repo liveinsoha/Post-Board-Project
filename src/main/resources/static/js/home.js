@@ -4,10 +4,10 @@ $(document).ready(function () {
     var selectedSortOrder = urlParams.get("sort");
 
     if (selectedSortOrder) {
-        if (selectedSortOrder === 'createdDate,asc') {
-            $("#sortOrder").val("createdDate,asc").prop('selected', true);
+        if (selectedSortOrder === 'createdTime,asc') {
+            $("#sortOrder").val("createdTime,asc").prop('selected', true);
         } else {
-            $("#sortOrder").val("createdDate,desc").prop('selected', true);
+            $("#sortOrder").val("createdTime,desc").prop('selected', true);
         }
     }
 });
