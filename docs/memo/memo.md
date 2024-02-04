@@ -768,10 +768,6 @@ Order를 기준으로 페이징 하고 싶은데, 다(N)인 OrderItem을 조인�
 ( 1 : 1 관계는 fetch join을 해도 문제가 발생하지 않는다. )
 
 
-컬렉션 엔티티를 조회하고 페이징 기능까지 함께 사용하려면 어떻게 해야할까?
-방법
-먼저 ToOne (OneToMany, OneToOne) 관계를 모두 페치 조인한다. (ToOne 관계는 row수를 증가시키지 않기 때문에 페이징 쿼리에 영향을 주지 않는다. 즉, 데이터 중복 문제 X)
-컬렉션은 지연 로딩으로 조회한다. (fetch 조인 사용 x)
 지연 로딩 성능 최적화를 위해 hibernate.default_batch_fetch_size 또는 @BatchSize 를 적용한다.
 
 이 옵션들을 사용하면 컬렉션이나, 프록시 객체를 한꺼번에 설정한 size IN 키워드를 사용해 조회한다.- hibernate.default_batch_fetch_size: 글로벌 설정 ( 주로 사용 )
@@ -894,3 +890,210 @@ return commentRepository.save(comment);
 
     }
 ````
+
+## 대댓글 작성자의 이름을 불러올 때, Response에 어떻게 내보내는지 확인하자.// -> tuple을 쓰는 것도 방법이지만, -> 페이조인으로 연관관계 필드 불러온 후 getter로 할당. 
+
+````agsl
+
+        // 이곳은 ReplyRepositoryCustomImpl
+    @Override
+    public List<Reply> findReplyByBoard(Long boardId) {
+
+        List<Reply> replies = query.select(reply)
+                .from(reply)
+                .join(reply.member, QMember.member)
+                .join(reply.board, QBoard.board)
+                .where(reply.board.id.eq(boardId))
+                .fetch();
+
+        return replies; //dto는 컨트롤러가서 바꾸자
+    }
+    
+    //
+    //이곳은 ReplyResponseDto 생성자.
+        public ReplyResponseDto(Reply reply) {
+        this.id = reply.getId();
+        this.boardTitle = reply.getBoard().getTitle();
+        this.boardId = reply.getBoard().getId();
+        this.replyAuthorId = reply.getMember().getId();
+        this.replyAuthor = reply.getMember().getAccount();
+        this.content = reply.getContent();
+        this.createdTime = reply.getCreatedTime();
+    }
+    
+````
+
+## 다대일 양방향 연관관계를 사용할 경우 질문이 있습니다
+ 아래와 같이 Reply 엔티티를 생성할 때 Board엔티티의 List<Reply> replies에 추가를 해주어야 하기 떄문에,
+ 엔티티 생성시 필요한 엔티티에 대한 select문은 getReferenceById를 사용해서 없앨 수 있었고 Reply엔티티 생성도 할 수 있었다.
+````agsl
+    @Transactional
+    public Reply addReply(Long memberId, Long boardId, String content) {
+
+        Member member = memberRepository.getReferenceById(memberId); //엔티티 생성에 불필요한 select문 없다.
+        Board board = boardRepository.getReferenceById(boardId);
+        System.out.println("===================");
+        Reply reply = Reply.createReply(member, board, content);
+        System.out.println("===================");
+        return replyRepository.save(reply);
+    }
+````
+ 다만 다대일 양방향 연관관계의 경우 댓글을 저장할 때마다, Board에 대한 Select쿼리가 발생한다.
+ 
+````agsl
+    public static Reply createReply(Member member, Board board, String content) {
+        Reply reply = new Reply();
+        reply.member = member;
+        reply.board = board;
+        reply.content = content;
+        reply.likeCount = 0;
+        reply.isDeleted = false;
+        log.info("board select 발생 넣기 --");
+        board.addReply(reply);
+        log.info("board select 발생 넣기 --");
+        return reply;
+    }
+````
+
+이렇게 댓글을 저장할 때 마다 board에 대한 select쿼리가 발생하다 보니 다대일 양방향 관계를 하지 말아야 하는 생각이 드는데요..
+지금 프로젝트에서는 양방향 연관관계의 장점은 영속성 전이와 orphanremoval을 사용헤서 게시글 삭제시 댓글이 모두 삭제되는 이점을 얻는다는 것이 있습니다.
+물론 board삭제할 경우 replyrepository에서 boardId를 통한 댓글 삭제가 가능할 것으로 생각 되는데요.
+
+댓글을 작성할 때마다 Board select쿼리가 나가는 것은 성능상의 이슈로 봐야 할까요?? -> 다대일 단방향 연관관계로 바꾸는게 맞을까요?
+아니면 양방향 연관관계의 경우 JPA를 사용하지 않을시 객체지향적 코드를 보장한다는 이야기를 들었는데 현재 프로젝트 진행 중엔 와닿지가 않아서
+어떤 선택을 해야할 지 질문드립니다!!
+어떤 선택을 해야 할까요?
+
+아래는 발생 쿼리 로그입니다.
+```agsl
+===================
+2024-02-03T14:15:00.936+09:00  INFO 2612 --- [    Test worker] cos.blog.web.model.entity.Reply          : board select 발생 넣기 --
+2024-02-03T14:15:00.937+09:00 DEBUG 2612 --- [    Test worker] org.hibernate.SQL                        : 
+    select
+        b1_0.board_id,
+        b1_0.content,
+        b1_0.created_time,
+        b1_0.last_modified_time,
+        b1_0.member_id,
+        b1_0.title 
+    from
+        board b1_0 
+    where
+        b1_0.board_id=?
+2024-02-03T14:15:00.938+09:00  INFO 2612 --- [    Test worker] p6spy                                    : #1706937300938 | took 0ms | statement | connection 74| url jdbc:h2:tcp://localhost/~/blog
+select b1_0.board_id,b1_0.content,b1_0.created_time,b1_0.last_modified_time,b1_0.member_id,b1_0.title from board b1_0 where b1_0.board_id=?
+select b1_0.board_id,b1_0.content,b1_0.created_time,b1_0.last_modified_time,b1_0.member_id,b1_0.title from board b1_0 where b1_0.board_id=31;
+2024-02-03T14:15:00.939+09:00  INFO 2612 --- [    Test worker] cos.blog.web.model.entity.Reply          : board select 발생 넣기 --
+===================
+2024-02-03T14:15:00.940+09:00 DEBUG 2612 --- [    Test worker] org.hibernate.SQL                        : 
+    insert 
+    into
+        reply
+        (board_id, content, created_time, is_deleted, last_modified_time, like_count, member_id, reply_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, default)
+2024-02-03T14:15:00.942+09:00  INFO 2612 --- [    Test worker] p6spy                                    : #1706937300942 | took 0ms | statement | connection 74| url jdbc:h2:tcp://localhost/~/blog
+insert into reply (board_id,content,created_time,is_deleted,last_modified_time,like_count,member_id,reply_id) values (?,?,?,?,?,?,?,default)
+insert into reply (board_id,content,created_time,is_deleted,last_modified_time,like_count,member_id,reply_id) values (31,'replyreply','2024-02-03T14:15:00.939+0900',false,'2024-02-03T14:15:00.939+0900',0,12,default);
+===================
+```
+
+
+## bookId로 댓글을 조회하고 그에 딸린 대댓글까지 조회할 수 있다 -> 이 방법은 페이징이 불가하다.(V3의 방법)
+
+````agsl
+
+  * JPA 2편 4. API개발 고급 V3에 해당한다.
+     * 페이징 불가하다는 단점이 있다 (ToOne관계만 페치조인 할 경우에는 페이징이 가능하다.)
+     * 조인을 하면 다를 기준으로 로우가 형성되는데 distinct를 작성하면 JPA가 orderItem id가 같은 애들은 중복이라 여겨 없앤다
+ @Query(
+            "select distinct r " +
+                    "from Review r " +
+                    "join fetch r.member " +
+                    "join fetch r.book " +
+                    "left join fetch r.reviewComments rc " + //대댓글이 없을 수도 있으므로..
+                    "where r.book.id = :bookId and r.isHidden = false and (rc.isHidden = false or rc is null) " +
+                    "order by r.likesCount desc, r.createdTime asc "
+    )
+    List<Review> findReviews(@Param("bookId") Long bookId);
+````
+
+
+## 컬렉션 조회시 페이징을 하고 최적화 하는 강력한 기능
+````agsl
+
+@Override
+    public Optional<Board> findBoardWithMember(Long boardId) {
+        Board findBoard = query.select(board).distinct()
+                .from(board)
+                .join(board.member, QMember.member).fetchJoin()
+                .where(board.id.eq(boardId))
+                .fetchOne();
+        return Optional.ofNullable(findBoard);
+    }
+    ToOne관계인 멤버는 페치조인으로 가져오고 나머지는 LAzyLoading시 In쿼리가 발생한다.
+    
+
+public Board findBoardWithRepliesCanPaging(Long boardId) {
+        Board board = boardRepository.findBoardWithMember(boardId).orElseThrow(NoSuchElementException::new);
+        return board;
+    }
+    
+ @Test
+    void 컬렉션조회_batch(){
+        Board board = boardService.findBoardWithRepliesCanPaging(1L); //ToOne관계만 페치조인.
+        System.out.println("board = " + board); 
+        //댓글들은 where reply.board.id = boardId
+        //대댓글들은 in쿼리
+        //대댓글의 작성자 member도 in쿼리 -> toOne관계도 페치조인하지않고 LazyLoading전략일 경우 BatchSize의 영향을 받아 in쿼리를 가져온다
+        // -> 하지만네트워크를 더 많이 타므로 TOOne관계는 fetchJoin으로 가져오자
+
+        /**
+         * V3방법은 모드 페치 조인으로 다루면 JPA에서 distinct처리를 하기 전에 많은 양의 데이터 중봅된 것이 넘어온다 -> 데이터 전송량이 많다는 단점이 있다.
+         * V3의 방법보다 Batch를 활용하면 쿼리는 3개 나가도 테이블 단위로 in으로 팍팍팍 찍어서 가져오기 때문에 데이터 전송량이 줄어든다/
+         */
+    }
+````
+
+## 객체 지연로딩의 경우 . 컬렉션 지연로딩의 경우 강제 초기화를 해주어야 프록시 객체가 아닌, 진짜 객체로 초기화 된다
+````agsl
+만약 EAGER 로딩을 사용한다면 Jpql 을 사용할 때 예상하지 못한 쿼리가 나가는 문제가 발생합니다.
+따라서 기본적으로 Lazy 로딩으로 세팅을 한 뒤에 성능 최적화를 시작합니다.
+한편, Open In View 옵션을 true 로 해두었다면, JPA 영속성 관리를 벗어난 시점에도 트랜젝션을 끊지 않기 때문에 Lazy 로딩으로 인해, 로딩 되지 않은 Entity 도 데이터를 당겨올 수 있습니다.
+그러나 Open In View 는 그만큼 커넥션을 풀에 반환하지 않고 가지고 있다는 것을 의미하기에, 잘못하면 커넥션 풀이 말라버리는 문제가 발생할 수 있고 따라서 Open In View 옵션을 끄는 것을 권장합니다.
+그런데 이 옵션을 끄면 트랜젝션을 관리하는 서비스 계층에서 필요한 데이터를 모두 로딩을 해놔야 함을 의미합니다.
+에초에 JPQL 을 사용하여 DTO 로 반환하는 경우 문제가 될 것이 없겠지만 엔티티를 사용한다면 강제 초기화를 해주어야 합니다.
+JPA 초기화에는 다음과 같은 두가지 방법이 있습니다.
+
+
+-트랜잭션 내에서 초기화..
+   @Test
+    void initTest() {
+        List<Reply> replies = replyRepository.findReplyWithBoardAndMember(1L);
+       assertThat(emf.getPersistenceUnitUtil().isLoaded( replies.get(0).getReReplies())).isFalse();
+        System.out.println("======초기화 되기 전=========");
+       
+        System.out.println("replies.get(0).getReReplies() = " + replies.get(0).getReReplies());
+        System.out.println("======print로인한 초기화 IN쿼리 나간다=========");
+        assertThat(emf.getPersistenceUnitUtil().isLoaded( replies.get(0).getReReplies().get(0))).isTrue();
+    }
+
+````
+
+### th:data-rrr의 값을 받아서 자바스크립트에서 사용하였다.
+
+```agsl
+<div class="pt-1 pb-1 w-100 text-end">
+                            <button class="btn btn-primary comment-btn" th:data-rrr="${reply.id}">댓글 <span
+                                    th:text="${reply.reReplyCount}"></span></button>
+                            <button class="btn btn-outline-grey like-btn" th:data-review="${reply.id}">좋아요<span
+                                    th:text="${reply.likeCount}"></span></button>
+                        </div>
+                        
+ // 아래는 자바스크립트 코드
+                         $(document).on("click", ".comment-submit", function (){
+        const replyId = $(this).closest('.review_wrap').find('.comment-btn').data('rrr'); //여기서 th:data-rrr값 사용.
+        const content = $(this).closest('.review_wrap').find('textarea.comment-textarea').val();
+
+        if(content.tr
+```

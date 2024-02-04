@@ -18,20 +18,22 @@ public class ReReply extends BaseEntity { //대댓글
 
     String content;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPLY_ID")
     Reply reply;
+
 
     public static ReReply createReReply(Member member, Reply reply, String content) {
         ReReply reReply = new ReReply();
         reReply.member = member;
         reReply.reply = reply;
-        reply.addReReply(reReply);
         reReply.content = content;
+        reply.addReReply(reReply);
+        reply.increaseReReplyCount();
         return reReply;
     }
 

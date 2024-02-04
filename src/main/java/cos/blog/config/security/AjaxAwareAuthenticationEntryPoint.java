@@ -3,11 +3,13 @@ package cos.blog.config.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.io.IOException;
 
+@Slf4j
 public class AjaxAwareAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
     public AjaxAwareAuthenticationEntryPoint(String loginUrl) {
@@ -24,6 +26,7 @@ public class AjaxAwareAuthenticationEntryPoint extends LoginUrlAuthenticationEnt
         String ajaxHeader = ((HttpServletRequest) request).getHeader("X-Requested-With");
         boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
         if (isAjax) {
+            log.info("인증되지 않은 Ajax요청입니다.");
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Ajax Request Denied (Session Expired)");
         } else {
             super.commence(request, response, authException);

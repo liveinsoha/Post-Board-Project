@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +28,8 @@ public class BoardResponseDto {
         this.writerId = board.getMember().getId();
         this.writer = board.getMember().getAccount();
         this.createdTime = board.getCreatedTime();
+        this.replys = board.getReplies().stream()
+                .map(ReplyResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

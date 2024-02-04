@@ -11,6 +11,8 @@
 
 <th:block layout:fragment="script"> <!--각 페이지의 js 만들기-->
     <script th:src="@{/js/board/board.js}"></script>
+    <script th:src="@{/js/board/review.js}"></script>
+    <script th:src="@{/js/common/call-ajax.js}"></script>
 
 </th:block>
 
@@ -44,38 +46,57 @@
             <textarea class="form-control" th:text="*{content}" rows="5" id="content"
                       readonly>content...</textarea>
         </div>
-        <div class="container">
-            <h6>replys</h6>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>name</th>
-                    <th>reply</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="reply : ${board.replys}">
-                    <input type="hidden" id="replyId" th:value="${reply.replyAuthorId}"/>
-                    <td th:text="${reply.replyAuthor}">John</td>
-                    <td th:text="${reply.content}">Doe</td>
-                    <td class="date" th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">Doe</td>
-                    <th:block sec:authorize="isAuthenticated()">
-                        <td th:if="${#authentication.principal.member.id == reply.replyAuthorId}" class="actions">
-                            <button id="btn-reply-delete"
-                                    th:onclick="'index.replyDelete(' + ${board.id} + ', ' + ${reply.id} + ')'"
-                                    class="delete-btn">Delete
-                            </button>
-                        </td>
-                    </th:block>
-                </tr>
-                </tbody>
-            </table>
+        <div class="mt-3 review-container">
+            <div class="review-wrap" th:each="reply : ${replies}">
+                <div class="d-table border-bottom pt-3 pb-4 w-100">
+                    <div class="d-table-cell pe-4" style="width: 180px">
+                        <span th:text="${reply.maskedName}">tre***</span>
+                    </div>
+                    <div class="d-table-cell review_wrap">
+                        <div th:if="${reply.isDeleted}">
+                            <div class="pt-2 pb-2" th:text="${reply.deletedMessage}">
+                                삭제된 메시지입니다
+                            </div>
+                        </div>
+                        <div th:unless="${reply.isDeleted}">
+                            <div class="pt-2 pb-2" >
+                                <span th:text="${reply.content}"> 댓글 내용</span>
+                                <button th:if="${account eq reply.account}"
+                                        class="btn btn-sm btn-danger " id="btn-delete-reply"
+                                        th:data-aaa="${reply.id}" th:data-bbb="${reply.boardId}">삭제
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="bg-light-grey ps-4 pe-4 pt-2 pb-2 border-top border-4"
+                             th:if="${reply.reReplies.size() ne 0}">
+                            <div class="mt-2 border-bottom border-1" th:each="reReply : ${reply.reReplies}">
+                                <div th:text="${reReply.content}">대댓글 내용입니다</div>
+                                <div class="mt-1">
+                                    <span class="me-2" th:text="${reReply.maskedName}">vos***</span>
+                                    <span class="me-2" th:text="${reReply.createdTime}">22-10-11</span>
+                                    <span class="me-2" th:text="${reReply.reReplyId}">22-10-11</span>
+                                    <button th:if="${account eq reReply.account}"
+                                            class="btn btn-sm btn-danger delete-reReply"
+                                            th:data-rere="${reReply.reReplyId}">삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-1 pb-1 w-100 text-end">
+                            <button class="btn btn-primary comment-btn" th:data-rrr="${reply.id}">댓글 <span
+                                    th:text="${reply.reReplyCount}"></span></button>
+                            <button class="btn btn-outline-grey like-btn" th:data-review="${reply.id}">좋아요<span
+                                    th:text="${reply.likeCount}"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form class="form-inline justify-content-end mt-3">
+                <label for="reply-content" class="mr-2"></label>
+                <input type="text" class="form-control mb-2 mr-sm-2" placeholder="add reply..." id="reply-content">
+                <button class="btn btn-primary btn-sm" id="btn-reply-save" type="button">댓글 달기</button>
+            </form>
         </div>
-        <form class="form-inline justify-content-end mt-3">
-            <label for="reply-content" class="mr-2"></label>
-            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="add reply..." id="reply-content">
-            <button class="btn btn-primary btn-sm" id="btn-reply-save" type="button">댓글 달기</button>
-        </form>
-    </div>
-</div> <!--각 페이지의 컨텐츠 만들기 끝-->
+    </div> <!--각 페이지의 컨텐츠 만들기 끝-->
 </html>

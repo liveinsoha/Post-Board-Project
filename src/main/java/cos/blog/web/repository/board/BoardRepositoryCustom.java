@@ -8,10 +8,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardRepositoryCustom {
 
+    Optional<Board> findBoardWithReplies(Long boardId);
+    Optional<Board> findBoardWithRepliesAndReReplies(Long boardId);
+
     Page<Board> findAllPaging(Pageable pageable, BoardSearchDto boardSearchDto);
+
+    Optional<Board> findBoardWithMember(Long boardId);
 
     Page<Board> findByMember(Pageable pageable, Long memberId);
 

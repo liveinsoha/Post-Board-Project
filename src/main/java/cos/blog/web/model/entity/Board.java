@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@ToString(exclude = {"replies", "member"})
+@ToString(exclude = { "member"})
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -34,7 +34,7 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "Member_ID")
     Member member;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true) //연관관계 끊어진 경우 엔티티 제거
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true) //연관관계 끊어진 경우 엔티티 제거
     List<Reply> replies = new ArrayList<>();
 
     public void addReply(Reply reply) {

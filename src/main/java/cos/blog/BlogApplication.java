@@ -56,13 +56,16 @@ public class BlogApplication {
                 Member member = new Member("kimkim" + i, "이원준", "aaa", "aaa");
                 Long memberId = memberService.join(member);
                 for (int j = 1; j <= 3; j++) {
-                    Board board = boardService.addBoard("title" + j, "content", member);
+                    Board board = boardService.addBoard("title" + j, "content", member.getId());
                 }
             }
 
             Member member1 = memberService.findById(1L);
-            for (int i = 1; i <= 30; i++) {
-                boardService.addReply(member1.getId(), 30L, "reply" + i);
+            for (long i = 1; i <= 5; i++) {
+                boardService.addReply(i, 1L, "reply" + i);
+                for (long j = 1; j < 10; j++) {
+                    boardService.addReReply(j, i, "reReplyContent" + j);
+                }
             }
 
         }

@@ -45,12 +45,12 @@ function callAjaxNoAlert(method, url, data){
         error: function (data) {
             if(data.status == 401){
                 const returnUrl = window.location.href;
-                location.href = '/account/login?returnUrl='+returnUrl;
+                location.href = '/blog/login?returnUrl='+returnUrl;
                 return false;
             }
             if(data.status == 403){
                 const returnUrl = window.location.href;
-                location.href = '/account/login?returnUrl='+returnUrl;
+                location.href = '/blog/login?returnUrl='+returnUrl;
                 return false;
             }
             const response = data.responseJSON;

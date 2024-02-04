@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
@@ -24,6 +25,40 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     public BoardRepositoryCustomImpl(EntityManager em) {
         this.query = new JPAQueryFactory(em);
+    }
+
+
+    @Override //컬레션 조회
+    public Optional<Board> findBoardWithReplies(Long boardId) {
+        Board findBoard = query.select(board).distinct()
+                .from(board)
+                .join(board.member, QMember.member).fetchJoin()
+                .leftJoin(board.replies, QReply.reply).fetchJoin() //댓글이 없을 수도 있으니까 leftJoin(데이터가 없는 경우)
+                .where(board.id.eq(boardId))
+                .fetchOne();
+        return Optional.ofNullable(findBoard);
+    }
+
+    @Override
+    public Optional<Board> findBoardWithRepliesAndReReplies(Long boardId) {
+        Board findBoard = query.select(board).distinct()
+                .from(board)
+                .join(board.member, QMember.member).fetchJoin()
+                .leftJoin(board.replies, QReply.reply).fetchJoin()
+                .leftJoin(QReply.reply, QReReply.reReply.reply)//댓글이 없을 수도 있으니까 leftJoin(데이터가 없는 경우)
+                .where(board.id.eq(boardId))
+                .fetchOne();
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Board> findBoardWithMember(Long boardId) {
+        Board findBoard = query.select(board).distinct()
+                .from(board)
+                .join(board.member, QMember.member).fetchJoin()
+                .where(board.id.eq(boardId))
+                .fetchOne();
+        return Optional.ofNullable(findBoard);
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,13 +32,24 @@ public class BoardService {
     private final ReReplyRepository reReplyRepository;
 
     @Transactional
-    public Board addBoard(String title, String content, Member member) {
+    public Board addBoard(String title, String content, Long memberId) {
+        Member member = memberRepository.getReferenceById(memberId);
         Board board = Board.createBoard(member, title, content);
         return boardRepository.save(board);
     }
 
-    public Board findByIdWithMember(Long id) {
-        Board board = boardRepository.findByIdWithMember(id).orElseThrow(NoSuchElementException::new);
+    public Board findBoardWithMember(Long boardId) {
+        Board board = boardRepository.findBoardWithMember(boardId).orElseThrow(NoSuchElementException::new);
+        return board;
+    }
+
+    public Board findBoardWithReplies(Long id) {
+        Board board = boardRepository.findBoardWithReplies(id).orElseThrow(NoSuchElementException::new);
+        return board;
+    }
+
+    public Board findBoardWithRepliesCanPaging(Long boardId) {
+        Board board = boardRepository.findBoardWithMember(boardId).orElseThrow(NoSuchElementException::new);
         return board;
     }
 
@@ -52,9 +64,10 @@ public class BoardService {
         return boardRepository.findById(boardId).orElseThrow(NoSuchElementException::new);
     }
 
-    public List<ReplyResponseDto> findReplyInBoard(Long boardId) {
-        List<ReplyResponseDto> replys = replyRepository.findReplyByBoard(boardId);
-        return replys;
+    public List<ReplyResponseDto> findRepliesInBoard(Long boardId) {
+        List<Reply> replies = replyRepository.findReplyWithBoardAndMember(boardId);
+        List<ReplyResponseDto> replyResponseDtos = replies.stream().map(ReplyResponseDto::new).collect(Collectors.toList());
+        return replyResponseDtos;
     }
 
     @Transactional
@@ -69,9 +82,12 @@ public class BoardService {
 
     @Transactional
     public Reply addReply(Long memberId, Long boardId, String content) {
+
         Member member = memberRepository.getReferenceById(memberId); //엔티티 생성에 불필요한 select문 없다.
         Board board = boardRepository.getReferenceById(boardId);
+        System.out.println("===================");
         Reply reply = Reply.createReply(member, board, content);
+        System.out.println("===================");
         return replyRepository.save(reply);
     }
 
@@ -89,12 +105,14 @@ public class BoardService {
         Reply parentReply = reReply.getReply();
         if (!parentReply.isDeleted()) { /*-- 댓글이 삭제되지 않았다면 --*/
             reReplyRepository.deleteById(reReplyId); // 대댓글만 삭제
+            parentReply.decreaseReReplyCount();
             return;
         }
         //부모 댓글이 isDeleted라면
         reReplyRepository.deleteById(reReplyId); //대댓글 삭제 후
 
         if (!reReplyRepository.existsByReplyId(parentReply.getId())) {// 자식 대댓글 더 존재하는 지 확인
+            parentReply.decreaseReReplyCount();
             replyRepository.deleteById(parentReply.getId()); // 없으면 부모댓글 엔티티 삭제.
         }
     }
@@ -116,7 +134,6 @@ public class BoardService {
         }
 
         replyRepository.deleteById(replyId); //대댓글 없다면 댓글 엔티티 삭제.
-        //  replyRepository.deleteById(replyId); //
     }
 
 }

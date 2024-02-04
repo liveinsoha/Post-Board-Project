@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.sql.rowset.spi.SyncResolver;
 import java.time.LocalDateTime;
 
-@ToString(exclude = {"createdTime"})
+@ToString
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -4,6 +4,7 @@ import cos.blog.config.security.PrincipalDetails;
 import cos.blog.web.controller.BaseResponse;
 import cos.blog.web.dto.*;
 import cos.blog.web.model.entity.Board;
+import cos.blog.web.model.entity.Reply;
 import cos.blog.web.service.BoardService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,21 +36,24 @@ public class BoardController {
     }
 
 
-
     @PostMapping("/board/createBoard")
     public String postBoard(@ModelAttribute BoardForm boardFormDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        boardService.addBoard(boardFormDto.getTitle(), boardFormDto.getContent(), principalDetails.getMember());
+        boardService.addBoard(boardFormDto.getTitle(), boardFormDto.getContent(), principalDetails.getMember().getId());
         return "redirect:/";
     }
 
     @GetMapping("/board/details/{boardId}")
-    public String details(@PathVariable Long boardId, Model model) {
-        Board board = boardService.findByIdWithMember(boardId);
-        List<ReplyResponseDto> replyInBoard = boardService.findReplyInBoard(boardId);
+    public String details(@PathVariable Long boardId, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+       log.info("GET : board/details/{}", boardId);
+
+        Board board = boardService.findBoardWithMember(boardId); //ToOne관계는 Board -> Member 페치조인으로 조인
         BoardResponseDto boardFormDto = new BoardResponseDto(board);
-        boardFormDto.setReplys(replyInBoard);
+        List<ReplyResponseDto> repliesInBoardDto = boardService.findRepliesInBoard(boardId);
         log.info("boardFormDto = {}", boardFormDto);
         model.addAttribute("board", boardFormDto);
+        model.addAttribute("replies", repliesInBoardDto);
+        String account = findAccountForCheckingIdentification(principalDetails);
+        model.addAttribute("account", account);
         return "/board/details";
     }
 
@@ -66,20 +73,18 @@ public class BoardController {
         return "redirect:/board/details/" + boardId;
     }
 
-    @PostMapping("/board/reply/{boardId}")
-    @ResponseBody
-    public ResponseEntity<Object> addReply(ReplyRequestDto replyRequestDto) {
-        boardService.addReply(replyRequestDto.getMemberId(), replyRequestDto.getBoardId(), replyRequestDto.getContent());
-        BaseResponse response = new BaseResponse(HttpStatus.CREATED, "댓글이 등록되었습니다.", true);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
 
-    @DeleteMapping("/board/reply/{boardId}/{replyId}")
-    @ResponseBody
-    public ResponseEntity<Object> deleteReply(@PathVariable Long replyId) {
-        log.info("replyId = {}", replyId);
-        boardService.deleteReply(replyId);
-        BaseResponse response = new BaseResponse(HttpStatus.ACCEPTED, "댓글이 삭제되었습니다", true);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+
+
+
+
+    private String findAccountForCheckingIdentification(PrincipalDetails principalDetails) {
+        String account = "";
+        if (principalDetails != null) {
+            account = principalDetails.getMember().getAccount();
+        } else {
+            account = "";
+        }
+        return account;
     }
 }
