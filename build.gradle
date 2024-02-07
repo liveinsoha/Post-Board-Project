@@ -40,6 +40,9 @@ dependencies {
 	//Hibernate5JakartaModule 등록**
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 
+	//세션 저장
+//	implementation 'org.springframework.session:spring-session-jdbc'
+
 	//querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

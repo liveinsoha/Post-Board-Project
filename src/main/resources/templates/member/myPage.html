@@ -91,7 +91,7 @@
                 th:onclick="|location.href='@{/board/details/{id}(id=${reply.boardId})}'|">
                 <td th:text="${reply.boardTitle}">John</td>
                 <td th:text="${reply.content}">content</td>
-                <td th:text="${#temporals.format(reply.createdTime, 'yyyy-MM-dd HH:mm')}">2022-12-12</td>
+                <td th:text="${reply.createdTime}">2022-12-12</td>
             </tr>
             </tbody>
         </table>
