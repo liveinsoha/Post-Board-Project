@@ -23,10 +23,10 @@ public class BlogApplication {
     }
 
 
-    @Bean
+    /*@Bean
     public InitService initService() {
         return new InitService();
-    }
+    }*/
 
     /**
      * 프록시 객체를 로딩하기 위한 라이브러리
@@ -39,7 +39,7 @@ public class BlogApplication {
         hibernate5JakartaModule.configure(Hibernate5JakartaModule.Feature.FORCE_LAZY_LOADING, true);
         return hibernate5JakartaModule;
     }
-
+/*
     public static class InitService {
 
 
@@ -69,5 +69,5 @@ public class BlogApplication {
             }
 
         }
-    }
+    }*/
 }
