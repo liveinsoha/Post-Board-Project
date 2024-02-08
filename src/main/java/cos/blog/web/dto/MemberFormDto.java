@@ -1,9 +1,12 @@
 package cos.blog.web.dto;
 
 import cos.blog.web.model.entity.Member;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberFormDto {
 
     private String account;

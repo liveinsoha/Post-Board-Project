@@ -29,11 +29,11 @@ $(function () {
                 success: function (result) {
                     console.log('통신 성공 ' + result);
                     if (result === 'Available') {
-                        $('#user_id').css('background', 'aqua');
+                        $('#account').css('background', 'aqua');
                         $('#idChk').html('<b style="font-size: 14px; color:skyblue">[작성하신 아이디는 사용 가능합니다.]</b>');
                         chk1 = true;
                     } else {
-                        $('#user_id').css('background', 'pink');
+                        $('#account').css('background', 'pink');
                         $('#idChk').html('<b style="font-size: 14px; color:blue">[아이디가 중복되었습니다.]</b>');
                         chk1 = false;
                     }

@@ -20,9 +20,9 @@
 
     <div class="card" style="width:500px" th:object="${board}">
         <th:block sec:authorize="isAuthenticated()">
-            <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}"/>
+            <input type="hidden" id="memberId" th:value="${#authentication.principal.member.id}" />
         </th:block>
-        <input type="hidden" id="boardId" th:value="*{id}"/>
+        <input type="hidden" id="boardId" th:value="*{id}" />
         <div class="d-flex justify-content-between">
             <p class="card-title" th:text="|글번호: *{id} writer: *{writer}|">writer</p>
             <th:block sec:authorize="isAuthenticated()">
@@ -43,8 +43,7 @@
 
         <div class="form-group">
             <label for="content" th:for="content">Content:</label>
-            <textarea class="form-control" th:text="*{content}" rows="5" id="content"
-                      readonly>content...</textarea>
+            <textarea class="form-control" th:text="*{content}" rows="5" id="content" readonly>content...</textarea>
         </div>
         <div class="mt-3 review-container">
             <div class="review-wrap" th:each="reply : ${replies}">
@@ -59,10 +58,9 @@
                             </div>
                         </div>
                         <div th:unless="${reply.isDeleted}">
-                            <div class="pt-2 pb-2" >
+                            <div class="pt-2 pb-2">
                                 <span th:text="${reply.content}"> 댓글 내용</span>
-                                <button th:if="${account eq reply.account}"
-                                        class="btn btn-sm btn-danger " id="btn-delete-reply"
+                                <button th:if="${account eq reply.account}" class="btn btn-sm btn-danger delete-reply"
                                         th:data-aaa="${reply.id}" th:data-bbb="${reply.boardId}">삭제
                                 </button>
                             </div>
@@ -84,7 +82,7 @@
                             </div>
                         </div>
                         <div class="pt-1 pb-1 w-100 text-end">
-                            <button class="btn btn-primary comment-btn" th:data-rrr="${reply.id}">댓글 <span
+                            <button class="btn btn-primary comment-btn" th:data-rrr="${reply.id}">답글 <span
                                     th:text="${reply.reReplyCount}"></span></button>
                             <button class="btn btn-outline-grey like-btn" th:data-review="${reply.id}">좋아요<span
                                     th:text="${reply.likeCount}"></span></button>
@@ -98,5 +96,6 @@
                 <button class="btn btn-primary btn-sm" id="btn-reply-save" type="button">댓글 달기</button>
             </form>
         </div>
-    </div> <!--각 페이지의 컨텐츠 만들기 끝-->
+    </div>
+</div> <!--각 페이지의 컨텐츠 만들기 끝-->
 </html>
