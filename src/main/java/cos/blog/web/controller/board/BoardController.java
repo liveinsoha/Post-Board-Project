@@ -32,7 +32,7 @@ public class BoardController {
     @GetMapping("/board/createBoard")
     public String createBoard(Model model) {
         model.addAttribute("boardForm", new BoardForm());
-        return "/board/boardForm";
+        return "board/boardForm";
     }
 
 
@@ -54,7 +54,7 @@ public class BoardController {
         model.addAttribute("replies", repliesInBoardDto);
         String account = findAccountForCheckingIdentification(principalDetails);
         model.addAttribute("account", account);
-        return "/board/details";
+        return "board/details";
     }
 
     @GetMapping("/board/edit/{boardId}")
@@ -63,7 +63,7 @@ public class BoardController {
         Board board = boardService.findById(boardId);
         System.out.println("board = " + board);
         model.addAttribute("editForm", new BoardForm(board));
-        return "/board/editForm";
+        return "board/editForm";
     }
 
     @PostMapping("/board/edit/{boardId}")

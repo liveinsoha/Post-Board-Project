@@ -50,13 +50,13 @@ public class MemberController {
         model.addAttribute("replys", replyResponses);
         model.addAttribute("pagingBoard", pagingBoardDto);
         model.addAttribute("pagingReply", pagingReplyDto);
-        return "/member/myPage";
+        return "member/myPage";
     }
 
     @GetMapping("/member/join")
     public String join() {
         //    model.addAttribute("joinFormDto", new JoinFormDto());
-        return "/member/joinForm";
+        return "member/joinForm";
     }
 
     @PostMapping("/member/join")
@@ -76,7 +76,7 @@ public class MemberController {
         Member member = memberService.findById(memberId);
         MemberFormDto memberFormDto = new MemberFormDto(member);
         model.addAttribute("member", memberFormDto);
-        return "/member/details";
+        return "member/details";
     }
 
     @GetMapping("/member/edit/{memberId}")
@@ -84,7 +84,7 @@ public class MemberController {
         Member member = memberService.findById(memberId);
         MemberFormDto memberFormDto = new MemberFormDto(member);
         model.addAttribute("member", memberFormDto);
-        return "/member/editForm";
+        return "member/editForm";
     }
 
 
