@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/reReply")
+@RequestMapping("/rereply")
 @RequiredArgsConstructor
 public class ReReplyController {
 
@@ -33,10 +33,10 @@ public class ReReplyController {
      * 인증객체 id와 ReReply id가같을 때 삭제버튼이 나타나고 그것을 통해서만 삭제할 수 있다.
      * @return
      */
-    @DeleteMapping("/{reReplyId}")
-    public ResponseEntity<Object> deleteReply(@PathVariable Long reReplyId){
-        System.out.println(reReplyId);
-        boardService.deleteReReply(reReplyId);
+    @DeleteMapping("/{rereplyId}")
+    public ResponseEntity<Object> deleteReply(@PathVariable Long rereplyId){
+        System.out.println(rereplyId);
+        boardService.deleteReReply(rereplyId);
 
         BaseResponse response = new BaseResponse(HttpStatus.ACCEPTED, "댓글이 삭제 되었습니다", true);
 

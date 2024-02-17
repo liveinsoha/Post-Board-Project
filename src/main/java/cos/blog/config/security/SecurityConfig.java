@@ -22,7 +22,7 @@ public class SecurityConfig {
         http.csrf(CsrfConfigurer::disable); //SecurityConfig파일 작동 안하여 lonin을 이제 낚아채지 않는다.
 
         http.authorizeHttpRequests(authorize ->
-                                authorize.requestMatchers("/board/createBoard","/board/reply/**","/like/**", "/reReply/**").hasAnyRole("MEMBER", "ADMIN") //인증만 되면 둘어갈 수 있는 주소다
+                                authorize.requestMatchers("/board/create","/board/reply/**","/like/**", "/rereply/**").hasAnyRole("MEMBER", "ADMIN") //인증만 되면 둘어갈 수 있는 주소다
                                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "MANAGER")
                                         .requestMatchers("/manager/**").hasAnyRole("MEMBER")
                                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()

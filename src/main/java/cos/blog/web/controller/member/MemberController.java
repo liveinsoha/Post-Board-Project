@@ -24,6 +24,7 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/member")
 @Slf4j
 public class MemberController {
 
@@ -32,7 +33,7 @@ public class MemberController {
 
 
 
-    @GetMapping("/member/myPage")
+    @GetMapping("/mypage")
     public String myPage(Model model,
                          @Qualifier("board") @PageableDefault(size = 5, sort = "board_createdTime", direction = Sort.Direction.DESC) Pageable boardPageable,
                          @Qualifier("reply") @PageableDefault(sort = "reply_createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,
@@ -53,13 +54,13 @@ public class MemberController {
         return "member/myPage";
     }
 
-    @GetMapping("/member/join")
+    @GetMapping("/join")
     public String join() {
         //    model.addAttribute("joinFormDto", new JoinFormDto());
         return "member/joinForm";
     }
 
-    @PostMapping("/member/join")
+    @PostMapping("/join")
     public String join(@RequestBody MemberFormDto joinFormDto) {
         log.info("joinFormDto = {}", joinFormDto);
 
@@ -71,7 +72,7 @@ public class MemberController {
     }
 
 
-    @GetMapping("/member/details/{memberId}")
+    @GetMapping("/details/{memberId}")
     public String details(@PathVariable Long memberId, Model model) {
         Member member = memberService.findById(memberId);
         MemberFormDto memberFormDto = new MemberFormDto(member);
@@ -79,7 +80,7 @@ public class MemberController {
         return "member/details";
     }
 
-    @GetMapping("/member/edit/{memberId}")
+    @GetMapping("/edit/{memberId}")
     public String edit(@PathVariable Long memberId, Model model) {
         Member member = memberService.findById(memberId);
         MemberFormDto memberFormDto = new MemberFormDto(member);
@@ -91,7 +92,7 @@ public class MemberController {
     /**
      * 현재 비밀번호 확인하고, 옳지 않을 경우 false, 옳을 경우 변경을 완료하고 details로 리다이렉트
      */
-    @PostMapping("/member/edit/{memberId}")
+    @PostMapping("/edit/{memberId}")
     @ResponseBody
     public boolean edit(@PathVariable Long memberId,
                         @RequestBody UpdateMemberDto updateForm,
@@ -104,14 +105,14 @@ public class MemberController {
         return false;
     }
 
-    @PostMapping("/member/join1")
+    @PostMapping("/join1")
     @ResponseBody
     public String join1(@RequestBody MemberTestDto memberTestDto) {
         System.out.println("memberTestDto = " + memberTestDto);
         return "회원가입";
     }
 
-    @PostMapping("/member/checkId")
+    @PostMapping("/checkId")
     @ResponseBody
     public String checkId(@RequestBody String checkId) {
         System.out.println("checkId = " + checkId);

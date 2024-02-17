@@ -112,7 +112,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     private BooleanExpression searchByLike(String searchBy, String searchQuery) {
         if (StringUtils.equals("author", searchBy)) {
-            return board.member.name.like("%" + searchQuery + "%");
+            return board.member.account.like("%" + searchQuery + "%");
         } else if (StringUtils.equals("content", searchBy)) {
             return board.content.like("%" + searchQuery + "%");
         }

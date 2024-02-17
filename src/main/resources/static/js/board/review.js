@@ -60,7 +60,7 @@ $(function (){
             content : content
         }
 
-        callAjax("post", "/blog/reReply", data);
+        callAjax("post", "/blog/rereply", data);
     })
 
     $(document).on("click", ".delete-reReply", function (){
@@ -72,7 +72,7 @@ $(function (){
 
         const reReplyId = $(this).data("rere"); //여기서 th:data-reReply 값을 사용한다
         console.log(reReplyId);
-        callAjax("delete", "/blog/reReply/"+reReplyId, null);
+        callAjax("delete", "/blog/rereply/"+reReplyId, null);
     })
 
     $('.like-btn').on("click", function (){

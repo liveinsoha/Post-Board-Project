@@ -25,24 +25,25 @@ import java.util.stream.Stream;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/board")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/board/createBoard")
-    public String createBoard(Model model) {
+    @GetMapping("/create")
+    public String create(Model model) {
         model.addAttribute("boardForm", new BoardForm());
         return "board/boardForm";
     }
 
 
-    @PostMapping("/board/createBoard")
+    @PostMapping("/create")
     public String postBoard(@ModelAttribute BoardForm boardFormDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
         boardService.addBoard(boardFormDto.getTitle(), boardFormDto.getContent(), principalDetails.getMember().getId());
         return "redirect:/";
     }
 
-    @GetMapping("/board/details/{boardId}")
+    @GetMapping("/details/{boardId}")
     public String details(@PathVariable Long boardId, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
        log.info("GET : board/details/{}", boardId);
 
@@ -57,7 +58,7 @@ public class BoardController {
         return "board/details";
     }
 
-    @GetMapping("/board/edit/{boardId}")
+    @GetMapping("/edit/{boardId}")
     public String editForm(Model model, @PathVariable Long boardId) {
         log.info("게시판 수정 Get");
         Board board = boardService.findById(boardId);
@@ -66,15 +67,12 @@ public class BoardController {
         return "board/editForm";
     }
 
-    @PostMapping("/board/edit/{boardId}")
+    @PostMapping("/edit/{boardId}")
     public String editBoard(@PathVariable Long boardId, BoardForm editForm) {
         log.info("게시판 수정 Post");
         boardService.editBoard(boardId, editForm.getTitle(), editForm.getContent());
         return "redirect:/board/details/" + boardId;
     }
-
-
-
 
 
 

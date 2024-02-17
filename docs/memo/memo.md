@@ -7,7 +7,7 @@
                     <a class="nav-link" href="/blog/member/join">회원가입</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/blog/board/createBoard">글쓰기</a>
+                    <a class="nav-link" href="/blog/board/create">글쓰기</a>
                 </li>
                 <li sec:authorize="isAuthenticated()" class="nav-item">
                     <a class="nav-link" href="/blog/logout">로그아웃</a>
@@ -525,7 +525,7 @@ String showUsers(Model model,
 @Qualifier("bar") Pageable second) { … }
 - 
 ````agsl
-  @GetMapping("/member/myPage")
+  @GetMapping("/member/mypage")
     public String myPage(Model model,
                          @Qualifier("board") @PageableDefault(size = 5, sort = "createdTime", direction = Sort.Direction.DESC) Pageable boardPageable,
                          @Qualifier("reply") @PageableDefault(sort = "createdTime", direction = Sort.Direction.DESC) Pageable replyPageable,

@@ -60,7 +60,7 @@
                         <div th:unless="${reply.isDeleted}">
                             <div class="pt-2 pb-2">
                                 <span th:text="${reply.content}"> 댓글 내용</span>
-                                <button th:if="${account eq reply.account}" class="btn btn-sm btn-danger delete-reply"
+                                <button id="btn-delete-reply" th:if="${account eq reply.account}" class="btn btn-sm btn-danger delete-reply"
                                         th:data-aaa="${reply.id}" th:data-bbb="${reply.boardId}">삭제
                                 </button>
                             </div>

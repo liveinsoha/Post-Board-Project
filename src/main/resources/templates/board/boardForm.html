@@ -18,7 +18,7 @@
 <div layout:fragment="content">  <!--각 페이지의 컨텐츠 만들기-->
 
 
-    <form action="/blog/board/createBoard" th:object="${boardForm}" method="post">
+    <form action="/blog/board/create" th:object="${boardForm}" method="post">
         <div class="form-group">
             <div class="form-group geeting" >글 작성하기</div>
             <label th:for="title" for="title">Title:</label>
